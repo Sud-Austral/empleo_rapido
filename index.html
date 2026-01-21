@@ -70,17 +70,19 @@
                     <table id="data-table">
                         <thead>
                             <tr>
-                                <th>RUT</th>
-                                <th>Nombre</th>
-                                <th>Calificación</th>
-                                <th>Edad</th>
-                                <th>Año</th>
-                                <th>Mes</th>
-                                <th>Tipo Contrato</th>
-                                <th>Fecha Salida</th>
-                                <th>Pagos</th>
-                                <th>TC Salida</th>
-                                <th>Rem Bruta Media</th>
+                                <th data-col="RUT">RUT</th>
+                                <th data-col="NOMBRE">Nombre</th>
+                                <th data-col="ORG_PADRE">Org Padre</th>
+                                <th data-col="ORGANISMO">Organismo</th>
+                                <th data-col="CALIFICACION">Calificación</th>
+                                <th data-col="EDAD">Edad</th>
+                                <th data-col="ANIO">Año</th>
+                                <th data-col="MES">Mes</th>
+                                <th data-col="TIPO_CONTRATO">Tipo Contrato</th>
+                                <th data-col="FECHA_SALIDA">Fecha Salida</th>
+                                <th data-col="PAGOS">Pagos</th>
+                                <th data-col="TC_SALIDA">TC Salida</th>
+                                <th data-col="REM_BRUTA">Rem Bruta Media</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
@@ -95,6 +97,19 @@
                 </div>
             </section>
         </main>
+
+        <!-- Details Modal -->
+        <div id="details-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Detalles del Registro</h2>
+                    <button id="close-modal" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-details-body">
+                    <!-- Details injected here -->
+                </div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

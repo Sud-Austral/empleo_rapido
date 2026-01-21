@@ -254,6 +254,83 @@ table {
     border-collapse: collapse;
     font-size: 0.85rem;
     white-space: nowrap;
+    table-layout: fixed;
+    /* Enforce fixed layout */
+}
+
+/* Define fixed widths for columns */
+/* 1: RUT, 2: Nombre, 3: OrgP, 4: Org, 5: Calif, 6: Edad, 7: Año, 8: Mes, 9: TC, 10: F.Sal, 11: Pagos, 12: TC Sal, 13: Rem */
+th:nth-child(1) {
+    width: 100px;
+}
+
+/* RUT */
+th:nth-child(2) {
+    width: 250px;
+}
+
+/* Nombre */
+th:nth-child(3) {
+    width: 180px;
+}
+
+/* Org Padre */
+th:nth-child(4) {
+    width: 220px;
+}
+
+/* Organismo */
+th:nth-child(5) {
+    width: 150px;
+}
+
+/* Calif */
+th:nth-child(6) {
+    width: 80px;
+}
+
+/* Edad */
+th:nth-child(7) {
+    width: 100px;
+}
+
+/* Año */
+th:nth-child(8) {
+    width: 80px;
+}
+
+/* Mes */
+th:nth-child(9) {
+    width: 140px;
+}
+
+/* Tipo Contrato */
+th:nth-child(10) {
+    width: 100px;
+}
+
+/* Fecha Salida */
+th:nth-child(11) {
+    width: 60px;
+}
+
+/* Pagos */
+th:nth-child(12) {
+    width: 120px;
+}
+
+/* TC Salida */
+th:nth-child(13) {
+    width: 120px;
+}
+
+/* Remuneracion */
+
+/* Text truncation for long fields */
+td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 thead {
@@ -273,7 +350,136 @@ th {
     font-size: 0.75rem;
     letter-spacing: 0.02em;
     cursor: pointer;
-    /* Enable sort indicators later? */
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: var(--surface-color);
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.modal-overlay.hidden .modal-content {
+    transform: scale(0.95);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.detail-row {
+    display: flex;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    flex: 1;
+    /* Width control */
+    min-width: 150px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.detail-value {
+    flex: 2;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    word-break: break-word;
+}
+
+th:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+}
+
+th::after {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: 0.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 15l5 5 5-5'/%3E%3Cpath d='M7 9l5-5 5 5'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    vertical-align: middle;
+}
+
+th.sort-asc::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 15l5-5 5 5'/%3E%3C/svg%3E");
+    opacity: 1;
+}
+
+th.sort-desc::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 9l5 5 5-5'/%3E%3C/svg%3E");
+    opacity: 1;
 }
 
 td {
@@ -284,6 +490,7 @@ td {
 
 tr:hover td {
     background-color: #f8fafc;
+    cursor: pointer;
 }
 
 /* Badges for Contrato */

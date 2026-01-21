@@ -24,6 +24,7 @@ const PAGE_SIZE = 100;
 let currentPage = 1;
 let searchQuery = '';
 let searchDebounceTimer;
+let currentSort = { col: null, dir: 'asc' };
 
 // Global state for selected filters
 const activeFilters = {
@@ -44,6 +45,10 @@ const els = {
     nextBtn: document.getElementById('next-page'),
     pageInfo: document.getElementById('page-info'),
     searchInput: document.getElementById('search-input'),
+    searchInput: document.getElementById('search-input'),
+    modal: document.getElementById('details-modal'),
+    modalBody: document.getElementById('modal-details-body'),
+    closeModalBtn: document.getElementById('close-modal'),
     filters: {
         orgPadre: document.getElementById('filter-org-padre'),
         organismo: document.getElementById('filter-organismo'),
@@ -96,6 +101,26 @@ async function init() {
             });
         }
 
+        // Sorting Listeners
+        document.querySelectorAll('th[data-col]').forEach(th => {
+            th.addEventListener('click', () => {
+                const colKey = th.dataset.col;
+                handleSort(colKey);
+            });
+        });
+
+
+
+
+        // Modal Close Listeners
+        if (els.closeModalBtn) {
+            els.closeModalBtn.addEventListener('click', closeModal);
+        }
+        if (els.modal) {
+            els.modal.addEventListener('click', (e) => {
+                if (e.target === els.modal) closeModal();
+            });
+        }
 
     } catch (e) {
         console.error(e);
@@ -236,7 +261,59 @@ function applyFilters() {
 
     currentPage = 1;
     updateStats();
+    sortData(); // Apply sort after filtering
     updateTable();
+}
+
+function handleSort(colKey) {
+    if (currentSort.col === colKey) {
+        // Toggle direction
+        currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSort.col = colKey;
+        currentSort.dir = 'asc';
+    }
+    sortData();
+    updateTable();
+    updateSortIcons();
+}
+
+function sortData() {
+    if (!currentSort.col) return;
+
+    const colIndex = COL[currentSort.col];
+    const dir = currentSort.dir === 'asc' ? 1 : -1;
+
+    filteredData.sort((a, b) => {
+        let valA = a[colIndex];
+        let valB = b[colIndex];
+
+        // Handle null/undefined
+        if (valA === null || valA === undefined) valA = '';
+        if (valB === null || valB === undefined) valB = '';
+
+        // Numeric sort if applicable
+        if (typeof valA === 'number' && typeof valB === 'number') {
+            return (valA - valB) * dir;
+        }
+
+        // String sort
+        const strA = String(valA).toLowerCase();
+        const strB = String(valB).toLowerCase();
+
+        if (strA < strB) return -1 * dir;
+        if (strA > strB) return 1 * dir;
+        return 0;
+    });
+}
+
+function updateSortIcons() {
+    document.querySelectorAll('th').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.col === currentSort.col) {
+            th.classList.add(`sort-${currentSort.dir}`);
+        }
+    });
 }
 
 function updateStats() {
@@ -281,7 +358,7 @@ function updateTable() {
     const end = start + PAGE_SIZE;
     const pageData = filteredData.slice(start, end);
 
-    els.tableBody.innerHTML = pageData.map(row => {
+    els.tableBody.innerHTML = pageData.map((row, index) => {
         const formatMoney = (val) => {
             if (typeof val === 'number') return '$ ' + val.toLocaleString('es-CL');
             return val;
@@ -298,15 +375,39 @@ function updateTable() {
         else if (tc.includes('planta')) badgeClass += ' badge-planta';
         else if (tc.includes('trabajo')) badgeClass += ' badge-cod-trabajo';
 
+        let badgeClassEntrada = 'badge';
+        const tcEntrada = String(row[COL.TIPO_CONTRATO] || '').toLowerCase();
+
+        if (tcEntrada.includes('contrata')) badgeClassEntrada += ' badge-contrata';
+        else if (tcEntrada.includes('honorarios')) badgeClassEntrada += ' badge-honorarios';
+        else if (tcEntrada.includes('planta')) badgeClassEntrada += ' badge-planta';
+        else if (tcEntrada.includes('trabajo')) badgeClassEntrada += ' badge-cod-trabajo';
+
+        let calificacion = row[COL.CALIFICACION];
+        if (calificacion === 0 || calificacion === "0") {
+            calificacion = "Sin Clasificar";
+        }
+
+
+
+        // Use index to identify row later if needed, but easier to pass full object on click
+        // To attach click listener to dynamic row, we can use event delegation on tbody or attach here.
+        // Attaching simple inline onclick is messy with objects. 
+        // Best approach: Add data-index to TR.
+        // We need the index relative to filteredData? Yes.
+        const rowIndex = start + index;
+
         return `
-            <tr>
+            <tr onclick="showDetails(${rowIndex})">
                 <td>${row[COL.RUT] || ''}</td>
                 <td title="${row[COL.NOMBRE]}">${row[COL.NOMBRE] || ''}</td>
-                <td>${row[COL.CALIFICACION] || ''}</td>
+                <td>${row[COL.ORG_PADRE] || ''}</td>
+                <td>${row[COL.ORGANISMO] || ''}</td>
+                <td>${calificacion || ''}</td>
                 <td>${row[COL.EDAD] || ''}</td>
                 <td>${row[COL.ANIO] || ''}</td>
                 <td>${row[COL.MES] || ''}</td>
-                <td>${row[COL.TIPO_CONTRATO] || ''}</td>
+                <td><span class="${badgeClassEntrada}">${row[COL.TIPO_CONTRATO] || ''}</span></td>
                 <td>${fechaSalida}</td>
                 <td>${row[COL.PAGOS] || '0'}</td>
                 <td><span class="${badgeClass}">${row[COL.TC_SALIDA] || ''}</span></td>
@@ -335,6 +436,75 @@ els.nextBtn.addEventListener('click', () => {
         updateTable();
     }
 });
+
+// Modal Functions
+function showDetails(index) {
+    // index is relative to filteredData because we used mapped index from pageData + start offset?
+    // Wait, in map(row, index), index is 0..100.
+    // rowIndex passed was start + index.
+
+    // Safety check
+    if (index < 0 || index >= filteredData.length) return;
+
+    const row = filteredData[index];
+
+    // Generate HTML for all fields
+    // We can iterate over COL to get labels? 
+    // Or just list them manually for better order.
+
+    const money = (val) => (typeof val === 'number') ? '$ ' + val.toLocaleString('es-CL') : val;
+
+    const COLUMN_NAMES = [
+        'organismo_codigo', 'organismo_nombre', 'anyo', 'mes',
+        'remuneracionbruta_mensual', 'remuliquida_mensual', 'base',
+        'nombrecompleto_x', 'rut', 'nombreencontrado', 'homologado',
+        'age_label', 'sexo', 'fecha_entrada', 'codigo_org', 'organismo',
+        'codigo_padre', 'padre_org', 'municipal', 'anyo_salida', 'mes_salida',
+        'remuneracionbruta_mensual_salida', 'remuliquida_mensual_salida',
+        'base_salida', 'homologado_salida', 'fecha_salida', 'Pagos',
+        'tipo_cargo', 'tipo_cargo_salida'
+    ];
+
+    const date = (val) => {
+        if (!val) return '-';
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return val;
+        return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+
+    let displayItems = [];
+
+    for (let i = 0; i < row.length; i++) {
+        let rawLabel = COLUMN_NAMES[i] || `Columna ${i}`;
+        let val = row[i];
+
+        // Formats
+        if ([4, 5, 21, 22].includes(i)) val = money(val);
+        if ([13, 25].includes(i)) val = date(val);
+        if ((i === 10 || i === 24) && (val === 0 || val === '0')) val = 'Sin Clasificar';
+        if (val === null || val === undefined || val === '') val = '-';
+
+        let label = rawLabel.replace(/_/g, ' ');
+        label = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+
+        displayItems.push({ label, val });
+    }
+
+    els.modalBody.innerHTML = displayItems.map(item => `
+        <div class="detail-row">
+            <span class="detail-label">${item.label}</span>
+            <span class="detail-value">${item.val}</span>
+        </div>
+    `).join('');
+
+    els.modal.classList.remove('hidden');
+}
+
+window.showDetails = showDetails; // Expose to global scope for inline onclick
+
+function closeModal() {
+    els.modal.classList.add('hidden');
+}
 
 // Start
 init();
