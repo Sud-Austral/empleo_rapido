@@ -453,50 +453,97 @@ function showDetails(index) {
     // Or just list them manually for better order.
 
     const money = (val) => (typeof val === 'number') ? '$ ' + val.toLocaleString('es-CL') : val;
-
-    const COLUMN_NAMES = [
-        'organismo_codigo', 'organismo_nombre', 'anyo', 'mes',
-        'remuneracionbruta_mensual', 'remuliquida_mensual', 'base',
-        'nombrecompleto_x', 'rut', 'nombreencontrado', 'homologado',
-        'age_label', 'sexo', 'fecha_entrada', 'codigo_org', 'organismo',
-        'codigo_padre', 'padre_org', 'municipal', 'anyo_salida', 'mes_salida',
-        'remuneracionbruta_mensual_salida', 'remuliquida_mensual_salida',
-        'base_salida', 'homologado_salida', 'fecha_salida', 'Pagos',
-        'tipo_cargo', 'tipo_cargo_salida'
-    ];
-
     const date = (val) => {
         if (!val) return '-';
         const d = new Date(val);
         if (isNaN(d.getTime())) return val;
-        return d.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        // Use UTC components to avoid timezone shift
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const year = d.getUTCFullYear();
+        return `${day}-${month}-${year}`;
     };
 
-    let displayItems = [];
+    // 1. Single Fields Config
+    const singleFields = [
+        { idx: 16, label: 'Código Organismo Padre' },
+        { idx: 17, label: 'Organismo Padre' },
+        { idx: 0, label: 'Código Organismo' },
+        { idx: 1, label: 'Organismo' },
+        { idx: 8, label: 'RUT' },
+        { idx: 9, label: 'Nombre' },
+        { idx: 7, label: 'Nombre Base Datos' },
+        { idx: 26, label: 'Número de Pagos' },
+        { idx: 11, label: 'Clase de Edad' },
+        { idx: 12, label: 'Sexo' },
+        { idx: 18, label: 'Es Municipal' },
+    ];
 
-    for (let i = 0; i < row.length; i++) {
-        let rawLabel = COLUMN_NAMES[i] || `Columna ${i}`;
+    // 2. Paired Fields Config (Label | In Index | Out Index)
+    const pairedFields = [
+        { label: 'Año', idxIn: 2, idxOut: 19 },
+        { label: 'Mes', idxIn: 3, idxOut: 20 },
+        { label: 'Fecha', idxIn: 13, idxOut: 25 },
+        { label: 'Tipo Contrato', idxIn: 6, idxOut: 23 },
+        { label: 'Calificación', idxIn: 10, idxOut: 24 },
+        { label: 'Cargo', idxIn: 27, idxOut: 28 },
+        { label: 'Remuneración Bruta', idxIn: 4, idxOut: 21 },
+        { label: 'Remuneración Líquida', idxIn: 5, idxOut: 22 },
+    ];
+
+    let html = '';
+
+    // -- Render Single Fields --
+    singleFields.forEach(config => {
+        const i = config.idx;
         let val = row[i];
+        if (i < row.length) {
+            if (val === null || val === undefined || val === '') val = '-';
+            html += `
+                <div class="detail-row">
+                    <span class="detail-label">${config.label}</span>
+                    <span class="detail-value">${val}</span>
+                </div>
+            `;
+        }
+    });
 
-        // Formats
-        if ([4, 5, 21, 22].includes(i)) val = money(val);
-        if ([13, 25].includes(i)) val = date(val);
-        if ((i === 10 || i === 24) && (val === 0 || val === '0')) val = 'Sin Clasificar';
-        if (val === null || val === undefined || val === '') val = '-';
-
-        let label = rawLabel.replace(/_/g, ' ');
-        label = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
-
-        displayItems.push({ label, val });
-    }
-
-    els.modalBody.innerHTML = displayItems.map(item => `
-        <div class="detail-row">
-            <span class="detail-label">${item.label}</span>
-            <span class="detail-value">${item.val}</span>
+    // -- Render Comparison Header --
+    html += `
+        <div class="comparison-header">
+            <span class="pair-label">Campo Comparado</span>
+            <span class="pair-value-col">Entrada (Inicio)</span>
+            <span class="pair-value-col">Salida (Término)</span>
         </div>
-    `).join('');
+    `;
 
+    // -- Render Paired Fields --
+    pairedFields.forEach(pair => {
+        let valIn = row[pair.idxIn];
+        let valOut = row[pair.idxOut];
+
+        // Format Helper
+        const formatVal = (i, v) => {
+            if ([4, 5, 21, 22].includes(i)) return money(v);
+            if ([13, 25].includes(i)) return date(v);
+            if ((i === 10 || i === 24) && (v === 0 || v === '0')) return 'Sin Clasificar';
+            if (v === null || v === undefined || v === '') return '-';
+            return v;
+        };
+
+        valIn = formatVal(pair.idxIn, valIn);
+        valOut = formatVal(pair.idxOut, valOut);
+
+        html += `
+            <div class="detail-pair-row">
+                <span class="pair-label">${pair.label}</span>
+                <span class="pair-value-col entry">${valIn}</span>
+                <span class="pair-value-col exit">${valOut}</span>
+            </div>
+        `;
+    });
+
+    els.modalBody.innerHTML = html;
     els.modal.classList.remove('hidden');
 }
 

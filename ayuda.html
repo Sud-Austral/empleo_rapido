@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda y Aclaraciones - Empleo Rápido</title>
+    <meta name="description" content="Información sobre la metodología, fuentes de datos y guía de uso.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .help-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .help-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .help-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: var(--text-heading);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p,
+        li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .warning-box {
+            background-color: var(--status-warning-bg);
+            border-left: 4px solid var(--status-warning-text);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .info-box {
+            background-color: var(--status-info-bg);
+            border-left: 4px solid var(--status-info-text);
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-back:hover {
+            opacity: 0.8;
+        }
+
+        .tutorial-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background: var(--accent-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="help-container">
+        <a href="index.html" class="nav-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Volver al Dashboard
+        </a>
+
+        <h1 class="help-title">Ayuda y Aclaraciones</h1>
+
+        <div class="help-section">
+            <h2>Advertencias Importantes</h2>
+            <div class="warning-box">
+                <p><strong>Limitaciones de los datos:</strong> Esta herramienta debe ser considerada como
+                    <strong>referencial y no definitiva</strong>. Sirve para hacerse una idea del personal NUEVO
+                    contratado, pero se recomienda verificar caso a caso (remuneraciones, calificaciones, etc.).</p>
+            </div>
+
+            <h3>Fuente de Datos</h3>
+            <ul>
+                <li>Los datos provienen del <strong>Portal de Transparencia del Consejo para la Transparencia</strong>
+                    (www.portaltransparencia.cl).</li>
+                <li>La información está dividida en 4 archivos CSV independientes según el tipo de contrato.</li>
+                <li>Son datos reportados por organismos públicos sobre los pagos realizados a su personal.</li>
+            </ul>
+
+            <h3>Inconsistencias en la Base de Datos Original</h3>
+            <p>El CPLT actúa como un repositorio y no audita la información, lo que genera problemas como:</p>
+            <ul>
+                <li>Falta de identificador único (RUT) en muchos registros.</li>
+                <li>Nombres escritos con distintas grafías o sin normalización.</li>
+                <li>Pagos repetidos o mal ingresados (ej: fechas futuras imposibles).</li>
+                <li>Errores numéricos en remuneraciones o confusión entre montos brutos/líquidos.</li>
+                <li>Inconsistencia en los nombres de los cargos.</li>
+                <li>Lagunas de información (periodos sin reportar).</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h2>Metodología de Procesamiento</h2>
+            <div class="info-box">
+                <p>Para mitigar las inconsistencias, hemos aplicado un riguroso proceso de <strong>depuración y
+                        enriquecimiento</strong> de datos.</p>
+            </div>
+
+            <h3>¿Qué pasos seguimos?</h3>
+            <ol>
+                <li><strong>Rutificación:</strong> Asignamos RUT a los nombres usando una base de datos auxiliar,
+                    depurando nombres comunes y aislando casos no encontrados.</li>
+                <li><strong>Estimación de Edad:</strong> Usamos un modelo estadístico basado en el RUT para estimar
+                    rangos de edad (18-30, 30-50, 50-65, etc.).</li>
+                <li><strong>Determinación de Sexo:</strong> Algoritmo de clasificación basado en nombres de pila.</li>
+                <li><strong>Homologación de Calificaciones:</strong> Estandarización de títulos y cargos (ej: agrupar
+                    variantes de "Ingeniero" bajo una categoría común).</li>
+            </ol>
+        </div>
+
+        <div class="help-section">
+            <h2>¿Qué muestra exactamente esta herramienta?</h2>
+            <p>Este dashboard se enfoca específicamente en detectar <strong>nuevas contrataciones</strong> en el Estado
+                Central:</p>
+            <ul>
+                <li><strong>Entradas:</strong> Personas que ingresaron a un Organismo <strong>a partir de Marzo de
+                        2022</strong>.</li>
+                <li><strong>Sin Historial Previo:</strong> Personas que NO tenían registros de pagos anteriores (según
+                    la data disponible en CPLT), asumiendo que son "nuevos" en el Estado.</li>
+                <li><strong>Vigencia:</strong> Personas que tienen registros de pagos informados más allá de
+                    <strong>Junio 2025</strong>, sugiriendo que siguen activos.</li>
+            </ul>
+            <p><em>Nota: Se han excluido los Organismos Municipales, enfocándose solo en la administración
+                    centralizada.</em></p>
+        </div>
+
+        <div class="help-section">
+            <h2>Tutorial de Uso</h2>
+            <p>Aprende a sacar el máximo provecho al dashboard de Empleo Rápido.</p>
+
+            <div class="tutorial-step">
+                <div class="step-number">1</div>
+                <div>
+                    <strong>Filtrar Personal</strong>
+                    <p>Usa el panel izquierdo para seleccionar organismos, fechas de ingreso, rangos de edad o tipos de
+                        contrato. Los filtros funcionan "en cascada": si eliges un Ministerio, solo verás los servicios
+                        dependientes de él.</p>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div>
+                    <strong>Buscar por Nombre</strong>
+                    <p>Usa la barra superior para buscar personas específicas por Nombre o RUT. La tabla se actualizará
+                        instantáneamente.</p>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">3</div>
+                <div>
+                    <strong>Ordenar Resultados</strong>
+                    <p>Haz clic en los encabezados de la tabla (ej: "Remuneración") para ordenar los resultados de mayor
+                        a menor y detectar casos atípicos.</p>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">4</div>
+                <div>
+                    <strong>Ver Detalle y Comparar</strong>
+                    <p>Haz clic en cualquier fila de la tabla para abrir una ficha detallada. Allí podrás ver una
+                        <strong>comparativa directa</strong> entre las condiciones de ingreso (Entrada) y las
+                        condiciones actuales o de salida (Salida), incluyendo cambios de sueldo y cargo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
