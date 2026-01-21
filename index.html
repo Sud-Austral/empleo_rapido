@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empleo Rápido - Dashboard</title>
+    <meta name="description" content="Dashboard de datos de empleo público con filtros avanzados.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo">
+                <h1>Empleo Rápido</h1>
+            </div>
+            <div class="header-controls">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Buscar por Nombre o RUT...">
+                </div>
+                <span id="record-count">Cargando datos...</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <aside class="filters-panel">
+                <div class="filter-group">
+                    <label>Org Padre</label>
+                    <div class="filter-options" id="filter-org-padre"></div>
+                </div>
+                <div class="filter-group">
+                    <label>Organismo</label>
+                    <div class="filter-options" id="filter-organismo"></div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group half">
+                        <label>Año Entrada</label>
+                        <div class="filter-options compact" id="filter-anio"></div>
+                    </div>
+                    <div class="filter-group half">
+                        <label>Mes Entrada</label>
+                        <div class="filter-options compact" id="filter-mes"></div>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group half">
+                        <label>Año Salida</label>
+                        <div class="filter-options compact" id="filter-anio-salida"></div>
+                    </div>
+                    <div class="filter-group half">
+                        <label>Mes Salida</label>
+                        <div class="filter-options compact" id="filter-mes-salida"></div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo Contrato</label>
+                    <div class="filter-options" id="filter-tipo-contrato"></div>
+                </div>
+            </aside>
+
+            <section class="results-section">
+                <div class="stats-container" id="stats-container">
+                    <!-- Stats injected by JS -->
+                </div>
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>RUT</th>
+                                <th>Nombre</th>
+                                <th>Calificación</th>
+                                <th>Edad</th>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th>Tipo Contrato</th>
+                                <th>Fecha Salida</th>
+                                <th>Pagos</th>
+                                <th>TC Salida</th>
+                                <th>Rem Bruta Media</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-controls" id="pagination">
+                    <button id="prev-page" disabled>Anterior</button>
+                    <span id="page-info">Página 1</span>
+                    <button id="next-page">Siguiente</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
