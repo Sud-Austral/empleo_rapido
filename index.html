@@ -15,13 +15,22 @@
 <body>
     <div class="app-container">
         <header class="main-header">
-            <div class="logo">
-                <h1>Empleo Rápido</h1>
+            <div class="logo-container">
+                <img src="logo.png" alt="Instituto Libertad" class="header-logo">
+                <span id="logo-text">Empleo Rápido</span>
             </div>
             <div class="header-controls">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Buscar por Nombre o RUT...">
                 </div>
+                <button id="btn-download" class="header-btn" title="Descargar Excel">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
                 <a href="ayuda.html" class="help-link" title="Ayuda y Metodología">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -65,8 +74,12 @@
                     </div>
                 </div>
                 <div class="filter-group">
-                    <label>Tipo Contrato</label>
+                    <label>Tipo Contrato Entrada</label>
                     <div class="filter-options" id="filter-tipo-contrato"></div>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo Contrato Salida</label>
+                    <div class="filter-options" id="filter-tc-salida"></div>
                 </div>
             </aside>
 
@@ -119,6 +132,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="script.js"></script>
 </body>
 

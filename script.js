@@ -34,7 +34,8 @@ const activeFilters = {
     mes: new Set(),
     anioSalida: new Set(),
     mesSalida: new Set(),
-    tipoContrato: new Set()
+    tipoContrato: new Set(),
+    tcSalida: new Set()
 };
 
 // DOM Elements
@@ -57,8 +58,70 @@ const els = {
         anioSalida: document.getElementById('filter-anio-salida'),
         mesSalida: document.getElementById('filter-mes-salida'),
         tipoContrato: document.getElementById('filter-tipo-contrato'),
-    }
+        tcSalida: document.getElementById('filter-tc-salida'),
+    },
+    btnDownload: document.getElementById('btn-download'),
 };
+
+// ... (existing code) ...
+
+function downloadExcel() {
+    if (!filteredData || filteredData.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+    }
+
+    // Prepare data for Excel
+    // We map filteredData to objects with the specific headers we want
+    const dataForSheet = filteredData.map(row => {
+        // Safe getter
+        const g = (i) => {
+            let val = row[i];
+            if (val === null || val === undefined) return "";
+            return val;
+        };
+
+        return {
+            "Código Organismo": g(0),
+            "Organismo": g(1),
+            "Año Entrada": g(2),
+            "Mes Entrada": g(3),
+            "Remuneración Bruta Entrada": g(4),
+            "Remuneración Líquida Entrada": g(5),
+            "Tipo Contrato Entrada": g(6),
+            "Nombre Base Datos": g(7),
+            "RUT": g(8),
+            "Nombre": g(9),
+            "Calificación Entrada": g(10),
+            "Clase de Edad": g(11),
+            "Sexo": g(12),
+            "Fecha Ingreso": g(13),
+            "Código Org Padre": g(16),
+            "Organismo Padre": g(17),
+            "Es Municipal": g(18),
+            "Año Salida": g(19),
+            "Mes Salida": g(20),
+            "Remuneración Bruta Salida": g(21),
+            "Remuneración Líquida Salida": g(22),
+            "Tipo Contrato Salida": g(23),
+            "Calificación Salida": g(24),
+            "Fecha Salida": g(25),
+            "Número de Pagos": g(26),
+            "Cargo Entrada": g(27),
+            "Cargo Salida": g(28)
+        };
+    });
+
+    // Create Worksheet
+    const ws = XLSX.utils.json_to_sheet(dataForSheet);
+
+    // Create Workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Datos Empleo");
+
+    // Save File
+    XLSX.writeFile(wb, "empleo_rapido_export.xlsx");
+}
 
 // Helper for filter configs
 const filterConfigs = [
@@ -69,6 +132,7 @@ const filterConfigs = [
     { key: 'anioSalida', col: COL.ANIO_SALIDA, el: els.filters.anioSalida },
     { key: 'mesSalida', col: COL.MES_SALIDA, el: els.filters.mesSalida },
     { key: 'tipoContrato', col: COL.TIPO_CONTRATO, el: els.filters.tipoContrato },
+    { key: 'tcSalida', col: COL.TC_SALIDA, el: els.filters.tcSalida },
 ];
 
 async function init() {
@@ -120,6 +184,11 @@ async function init() {
             els.modal.addEventListener('click', (e) => {
                 if (e.target === els.modal) closeModal();
             });
+        }
+
+        // Download Button Listener
+        if (els.btnDownload) {
+            els.btnDownload.addEventListener('click', downloadExcel);
         }
 
     } catch (e) {
@@ -256,6 +325,7 @@ function applyFilters() {
         if (activeFilters.anioSalida.size > 0 && !activeFilters.anioSalida.has(row[COL.ANIO_SALIDA])) return false;
         if (activeFilters.mesSalida.size > 0 && !activeFilters.mesSalida.has(row[COL.MES_SALIDA])) return false;
         if (activeFilters.tipoContrato.size > 0 && !activeFilters.tipoContrato.has(row[COL.TIPO_CONTRATO])) return false;
+        if (activeFilters.tcSalida.size > 0 && !activeFilters.tcSalida.has(row[COL.TC_SALIDA])) return false;
         return true;
     });
 
@@ -318,11 +388,26 @@ function updateSortIcons() {
 
 function updateStats() {
     const counts = {};
+    const sums = {}; // Track sum of REM_BRUTA for each type
     let total = 0;
+
+    // We also want total average
+    let totalSum = 0;
+    let totalCountWithRem = 0;
 
     filteredData.forEach(row => {
         let type = row[COL.TC_SALIDA] || row[COL.TIPO_CONTRATO] || 'Sin Clasificar';
+
         counts[type] = (counts[type] || 0) + 1;
+
+        // Sum Remuneration
+        let rem = row[COL.REM_BRUTA];
+        if (typeof rem === 'number' && !isNaN(rem)) {
+            sums[type] = (sums[type] || 0) + rem;
+            totalSum += rem;
+            totalCountWithRem++;
+        }
+
         total++;
     });
 
@@ -331,18 +416,103 @@ function updateStats() {
 
     const sortedKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
+    const globalAvg = totalCountWithRem > 0 ? Math.round(totalSum / totalCountWithRem) : 0;
+    const fmtMoney = (v) => '$ ' + v.toLocaleString('es-CL');
+
     let html = `
         <div class="stat-card total">
             <span class="stat-label">Total</span>
             <span class="stat-value">${total.toLocaleString()}</span>
+            <span class="stat-subtext">Promedio: ${fmtMoney(globalAvg)}</span>
         </div>
     `;
 
     sortedKeys.forEach(key => {
+        let cardClass = 'stat-card';
+        const k = key.toLowerCase();
+        if (k.includes('contrata')) cardClass += ' contrata';
+        else if (k.includes('honorarios')) cardClass += ' honorarios';
+        else if (k.includes('planta')) cardClass += ' planta';
+        else if (k.includes('trabajo')) cardClass += ' cod-trabajo';
+
+        const count = counts[key];
+        const percent = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+
+        // Calculate Avg for this group
+        // Note: we can't assume all items in 'count' had a valid number, but usually yes. 
+        // Ideally we track countWithRem per group. But let's assume valid records mostly have rem.
+        // Actually safe way is to track count per group in same loop. 
+        // But to keep it simple, we'll divide by the count of items in that group. 
+        // If some items have NaN rem, they didn't add to sum, so avg might be slightly skewed if we divide by total count including NaNs.
+        // Correct approach: track valid counts.
+
+        // Let's re-loop or just accept small skews? No, let's do it right.
+        // I will use a separate countsWithRem object.
+    });
+
+    // --- REDOLING LOGIC TO INCLUDE VALID REM COUNTS ---
+
+    // Reset stats for re-calculation inside function
+    const stats = {}; // { key: { count: 0, sum: 0, validRemCount: 0 } }
+
+    total = 0;
+    totalSum = 0;
+    totalCountWithRem = 0;
+
+    filteredData.forEach(row => {
+        let type = row[COL.TC_SALIDA] || row[COL.TIPO_CONTRATO] || 'Sin Clasificar';
+
+        if (!stats[type]) stats[type] = { count: 0, sum: 0, validRemCount: 0 };
+
+        stats[type].count++;
+        total++;
+
+        let rem = row[COL.REM_BRUTA];
+        if (typeof rem === 'number' && !isNaN(rem)) {
+            stats[type].sum += rem;
+            stats[type].validRemCount++;
+
+            totalSum += rem;
+            totalCountWithRem++;
+        }
+    });
+
+    const sortedStatsKeys = Object.keys(stats).sort((a, b) => stats[b].count - stats[a].count);
+    const globalAvgFinal = totalCountWithRem > 0 ? Math.round(totalSum / totalCountWithRem) : 0;
+
+    html = `
+        <div class="stat-card total">
+            <span class="stat-label">Total</span>
+            <span class="stat-value">${total.toLocaleString()}</span>
+            <span class="stat-subtext">Registros Totales</span>
+            <div class="stat-avg-container">
+                <span class="stat-avg-label" style="color: rgba(255,255,255,0.8);">Prom. Bruta Salida</span>
+                <span class="stat-avg-value" style="color:white;">${fmtMoney(globalAvgFinal)}</span>
+            </div>
+        </div>
+    `;
+
+    sortedStatsKeys.forEach(key => {
+        let cardClass = 'stat-card';
+        const k = key.toLowerCase();
+        if (k.includes('contrata')) cardClass += ' contrata';
+        else if (k.includes('honorarios')) cardClass += ' honorarios';
+        else if (k.includes('planta')) cardClass += ' planta';
+        else if (k.includes('trabajo')) cardClass += ' cod-trabajo';
+
+        const data = stats[key];
+        const percent = total > 0 ? ((data.count / total) * 100).toFixed(1) : 0;
+        const avg = data.validRemCount > 0 ? Math.round(data.sum / data.validRemCount) : 0;
+
         html += `
-            <div class="stat-card">
+            <div class="${cardClass}">
                 <span class="stat-label">${key}</span>
-                <span class="stat-value">${counts[key].toLocaleString()}</span>
+                <span class="stat-value">${data.count.toLocaleString()}</span>
+                <span class="stat-subtext">${percent}% del total</span>
+                <div class="stat-avg-container">
+                    <span class="stat-avg-label">Prom. Bruta Salida</span>
+                    <span class="stat-avg-value">${fmtMoney(avg)}</span>
+                </div>
             </div>
         `;
     });
