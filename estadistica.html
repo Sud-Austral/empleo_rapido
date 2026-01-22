@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -37,7 +37,7 @@
     <style>
         :root {
             /* Vibrant Professional Palette */
-            --bg-body: #f8fafc;
+            --bg-body: #e2e8f0;
             --bg-card: #ffffff;
             --text-main: #0f172a;
             /* Slate 900 */
@@ -196,12 +196,12 @@
 
         /* --- Content Sections --- */
         .content-section {
-            background: white;
-            border: 1px solid var(--border-color);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 16px;
             margin-bottom: 2.5rem;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(0, 0, 0, 0.04);
         }
 
         .sec-header {
@@ -298,6 +298,242 @@
             border-color: #cbd5e1;
         }
 
+        /* === NUEVAS MEJORAS UI/UX === */
+
+        /* Barra de progreso de scroll */
+        #scrollProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9, #10b981);
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Animaciones de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .content-section {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .content-section:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .content-section:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .content-section:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .content-section:nth-child(4) {
+            animation-delay: 0.25s;
+        }
+
+        .content-section:nth-child(5) {
+            animation-delay: 0.3s;
+        }
+
+        .kpi-card {
+            animation: fadeInUp 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .kpi-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .kpi-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .kpi-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .kpi-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        /* Glassmorphism en header */
+        .inst-header {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Gradiente animado en header */
+        .inst-header::before {
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9, #10b981, #4f46e5);
+            background-size: 300% 100%;
+            animation: gradientMove 4s ease infinite;
+        }
+
+        /* Filter Chips (Filtros activos) */
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .filter-chip .chip-label {
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .filter-chip .chip-value {
+            font-weight: 700;
+        }
+
+        .filter-chip .chip-remove {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip .chip-remove:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .filter-chip .chip-remove svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        /* Skeleton loader */
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        .skeleton-text {
+            height: 1.5rem;
+            width: 60%;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-chart {
+            height: 280px;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        /* Micro-animación KPIs */
+        .kpi-val {
+            transition: all 0.3s ease;
+        }
+
+        .kpi-val.counting {
+            animation: countUp 0.6s ease-out;
+        }
+
+        /* Sombras con color por sección */
+        .content-section:nth-child(odd) {
+            box-shadow: 0 4px 24px -4px rgba(79, 70, 229, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        .content-section:nth-child(even) {
+            box-shadow: 0 4px 24px -4px rgba(14, 165, 233, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Tooltips enriquecidos */
+        .chart-tooltip-rich {
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(8px);
+            border-radius: 8px !important;
+            padding: 12px 16px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hover interactivo en gráficos */
+        .chart-wrapper canvas {
+            transition: transform 0.2s ease;
+        }
+
+        .chart-wrapper:hover canvas {
+            transform: scale(1.01);
+        }
+
         @media (max-width: 768px) {
             .header-top {
                 flex-direction: column;
@@ -316,6 +552,7 @@
         }
     </style>
 </head>
+
 
 <body>
     <main class="max-w-[1700px] mx-auto pb-12">
@@ -376,6 +613,33 @@
                     <select id="filterOrganismo" class="inst-select">
                         <option value="all">Todos los Organismos</option>
                     </select>
+                </div>
+                <!-- Botón Limpiar Filtros -->
+                <div class="flex items-end">
+                    <button id="btnClearFilters"
+                        class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-sm rounded-lg border border-slate-300 transition-all flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros Activos -->
+            <div id="activeFiltersContainer" class="mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-100 hidden">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="text-xs font-bold text-indigo-600 uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filtros activos:
+                    </span>
+                    <div id="activeFiltersTags" class="flex flex-wrap gap-2">
+                        <!-- Los tags se generan dinámicamente -->
+                    </div>
                 </div>
             </div>
 
@@ -609,27 +873,7 @@
                 </div>
             </div>
 
-            <!-- 8. Estacionalidad -->
-            <div class="content-section">
-                <div class="sec-header">
-                    <div class="sec-icon-box" style="background:#fffbeb; color:#d97706"><i
-                            class="fas fa-calendar-days"></i>
-                    </div>
-                    <span class="sec-title">8. Estacionalidad</span>
-                </div>
-                <div class="sec-body">
-                    <div class="charts-row">
-                        <div class="chart-box">
-                            <h4>Registros por Mes</h4>
-                            <div class="chart-wrapper"><canvas id="chart8_1"></canvas></div>
-                        </div>
-                        <div class="chart-box">
-                            <h4>Tendencia Mensual</h4>
-                            <div class="chart-wrapper"><canvas id="chart8_2"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- 9. Rankings -->
             <div class="content-section">
@@ -637,7 +881,7 @@
                     <div class="sec-icon-box" style="background:#eef2ff; color:#4f46e5"><i
                             class="fas fa-ranking-star"></i>
                     </div>
-                    <span class="sec-title">9. Rankings Avanzados</span>
+                    <span class="sec-title">8. Rankings Avanzados</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -653,35 +897,16 @@
                 </div>
             </div>
 
-            <!-- 10. Calidad -->
-            <div class="content-section">
-                <div class="sec-header">
-                    <div class="sec-icon-box" style="background:#f1f5f9; color:#475569"><i class="fas fa-database"></i>
-                    </div>
-                    <span class="sec-title">10. Calidad de Datos</span>
-                </div>
-                <div class="sec-body">
-                    <div class="charts-row">
-                        <div class="chart-box">
-                            <h4>Campos Faltantes</h4>
-                            <div class="chart-wrapper"><canvas id="chart10_1"></canvas></div>
-                        </div>
-                        <div class="chart-box">
-                            <h4>Completitud General</h4>
-                            <div class="chart-wrapper"><canvas id="chart10_2"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- NUEVAS SECCIONES 11-20 -->
 
-            <!-- 11. Talento Joven -->
+            <!-- 9. Talento Joven -->
             <div class="content-section">
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#ecfdf5; color:#10b981"><i class="fas fa-seedling"></i>
                     </div>
-                    <span class="sec-title">11. Talento Joven (< 30 Años)</span>
+                    <span class="sec-title">9. Talento Joven (< 30 Años)</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -703,7 +928,7 @@
                     <div class="sec-icon-box" style="background:#fff7ed; color:#f97316"><i
                             class="fas fa-user-clock"></i>
                     </div>
-                    <span class="sec-title">12. Proyección de Retiro (> 60 Años)</span>
+                    <span class="sec-title">10. Proyección de Retiro (> 60 Años)</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -719,12 +944,12 @@
                 </div>
             </div>
 
-            <!-- 13. Alta Dirección -->
+            <!-- 11. Alta Dirección -->
             <div class="content-section">
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#fefce8; color:#ca8a04"><i class="fas fa-crown"></i>
                     </div>
-                    <span class="sec-title">13. Alta Dirección (Top 10% Ingresos)</span>
+                    <span class="sec-title">11. Alta Dirección (Top 10% Ingresos)</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -740,13 +965,13 @@
                 </div>
             </div>
 
-            <!-- 14. Base Operativa -->
+            <!-- 12. Base Operativa -->
             <div class="content-section">
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#f0f9ff; color:#0284c7"><i
                             class="fas fa-layer-group"></i>
                     </div>
-                    <span class="sec-title">14. Base Operativa (Sueldos Bajos)</span>
+                    <span class="sec-title">12. Base Operativa (Sueldos Bajos)</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -768,7 +993,7 @@
                     <div class="sec-icon-box" style="background:#f5f3ff; color:#7c3aed"><i
                             class="fas fa-chart-area"></i>
                     </div>
-                    <span class="sec-title">15. Dispersión Salarial Interna</span>
+                    <span class="sec-title">13. Dispersión Salarial Interna</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -789,7 +1014,7 @@
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#ecfeff; color:#0891b2"><i class="fas fa-sitemap"></i>
                     </div>
-                    <span class="sec-title">16. Estructura Organizacional</span>
+                    <span class="sec-title">14. Estructura Organizacional</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -811,7 +1036,7 @@
                     <div class="sec-icon-box" style="background:#fff1f2; color:#be123c"><i
                             class="fas fa-user-graduate"></i>
                     </div>
-                    <span class="sec-title">17. Grado de Profesionalización</span>
+                    <span class="sec-title">15. Grado de Profesionalización</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -832,7 +1057,7 @@
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#f8fafc; color:#475569"><i
                             class="fas fa-file-invoice-dollar"></i></div>
-                    <span class="sec-title">18. Costo Laboral Per Cápita</span>
+                    <span class="sec-title">16. Costo Laboral Per Cápita</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -848,12 +1073,12 @@
                 </div>
             </div>
 
-            <!-- 19. Crecimiento -->
+            <!-- 17. Crecimiento -->
             <div class="content-section">
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#eff6ff; color:#2563eb"><i
                             class="fas fa-arrow-trend-up"></i></div>
-                    <span class="sec-title">19. Dinámica de Crecimiento</span>
+                    <span class="sec-title">17. Dinámica de Crecimiento</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -869,35 +1094,389 @@
                 </div>
             </div>
 
-            <!-- 20. Anomalías -->
-            <div class="content-section" id="section-20">
+            <!-- 18. Antigüedad Laboral -->
+            <div class="content-section">
                 <div class="sec-header">
-                    <div class="sec-icon-box" style="background:#fef2f2; color:#dc2626"><svg
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor">
-                            <path
-                                d="M12 2a10 10 0 0 0-7 17.5c.5.5 1 .5 1.5 0 .5-.5.5-1 0-1.5A8 8 0 1 1 12 20a8 8 0 0 1-7-4c-.5-.5-1-.5-1.5 0-.5.5-.5 1 0 1.5A10 10 0 0 0 12 2z" />
-                        </svg></div>
-                    <span class="sec-title">20. Detección de Anomalías</span>
+                    <div class="sec-icon-box" style="background:#fef3c7; color:#d97706"><i
+                            class="fas fa-hourglass-half"></i></div>
+                    <span class="sec-title">18. Antigüedad Laboral</span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
                         <div class="chart-box">
-                            <h4>Registros Atípicos (Edad/Sueldo)</h4>
+                            <h4>Distribución por Años de Servicio</h4>
                             <div class="chart-wrapper"><canvas id="chart20_1"></canvas></div>
                         </div>
                         <div class="chart-box">
-                            <h4>Organismos con inconsistencias</h4>
+                            <h4>Promedio de Antigüedad por Organismo</h4>
                             <div class="chart-wrapper"><canvas id="chart20_2"></canvas></div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- 19. Análisis por Tipo de Cargo -->
+            <div class="content-section">
+                <div class="sec-header">
+                    <div class="sec-icon-box" style="background:#dbeafe; color:#1d4ed8"><i class="fas fa-briefcase"></i>
+                    </div>
+                    <span class="sec-title">19. Análisis por Tipo de Cargo</span>
+                </div>
+                <div class="sec-body">
+                    <div class="charts-row">
+                        <div class="chart-box">
+                            <h4>Distribución por Tipo de Cargo</h4>
+                            <div class="chart-wrapper"><canvas id="chart21_1"></canvas></div>
+                        </div>
+                        <div class="chart-box">
+                            <h4>Remuneración Promedio por Tipo de Cargo</h4>
+                            <div class="chart-wrapper"><canvas id="chart21_2"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 20. Análisis de Liquidez -->
+            <div class="content-section">
+                <div class="sec-header">
+                    <div class="sec-icon-box" style="background:#fce7f3; color:#be185d"><i
+                            class="fas fa-money-check-alt"></i>
+                    </div>
+                    <span class="sec-title">20. Análisis de Liquidez</span>
+                </div>
+                <div class="sec-body">
+                    <div class="charts-row">
+                        <div class="chart-box">
+                            <h4>Comparativa Bruto vs Líquido por Organismo</h4>
+                            <div class="chart-wrapper"><canvas id="chart22_1"></canvas></div>
+                        </div>
+                        <div class="chart-box">
+                            <h4>Ratio Líquido/Bruto (Top 10 Organismos)</h4>
+                            <div class="chart-wrapper"><canvas id="chart22_2"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </main>
 
+
+    <!-- Barra de progreso de scroll -->
+    <div id="scrollProgress"></div>
+
     <!-- Logic Script -->
-    <script src="estadistica.js?v=6"></script>
+    <script src="estadistica.js?v=7"></script>
+
+    <!-- UI Enhancements Script -->
+    <script>
+        // Barra de progreso de scroll
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            document.getElementById('scrollProgress').style.width = progress + '%';
+        });
+
+        // Animación de conteo para KPIs
+        function animateValue(element, start, end, duration) {
+            if (start === end) return;
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            const timer = setInterval(() => {
+                current += increment * Math.ceil(range / 50);
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = current.toLocaleString('es-CL');
+            }, stepTime);
+        }
+
+        // Observador para animar KPIs cuando entran en vista
+        const kpiObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('counting');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.kpi-val').forEach(el => kpiObserver.observe(el));
+
+        // === FILTROS ACTIVOS ===
+        const filterLabels = {
+            filterYear: 'Año',
+            filterOrgPadre: 'Institución',
+            filterOrganismo: 'Organismo'
+        };
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFiltersContainer');
+            const tagsContainer = document.getElementById('activeFiltersTags');
+            if (!container || !tagsContainer) return;
+
+            const filters = [
+                { id: 'filterYear', el: document.getElementById('filterYear') },
+                { id: 'filterOrgPadre', el: document.getElementById('filterOrgPadre') },
+                { id: 'filterOrganismo', el: document.getElementById('filterOrganismo') }
+            ];
+
+            let html = '';
+            let hasActiveFilters = false;
+
+            filters.forEach(f => {
+                if (f.el && f.el.value !== 'all') {
+                    hasActiveFilters = true;
+                    const label = filterLabels[f.id] || f.id;
+                    const value = f.el.options[f.el.selectedIndex].text;
+                    html += `
+                        <div class="filter-chip" data-filter="${f.id}">
+                            <span class="chip-label">${label}:</span>
+                            <span class="chip-value">${value}</span>
+                            <span class="chip-remove" onclick="removeFilter('${f.id}')">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                            </span>
+                        </div>
+                    `;
+                }
+            });
+
+            tagsContainer.innerHTML = html;
+            container.classList.toggle('hidden', !hasActiveFilters);
+        }
+
+        function removeFilter(filterId) {
+            const el = document.getElementById(filterId);
+            if (el) {
+                el.value = 'all';
+                el.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Botón limpiar filtros
+        document.getElementById('btnClearFilters')?.addEventListener('click', () => {
+            ['filterYear', 'filterOrgPadre', 'filterOrganismo'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = 'all';
+            });
+            document.getElementById('filterYear')?.dispatchEvent(new Event('change'));
+        });
+
+        // Escuchar cambios en filtros
+        ['filterYear', 'filterOrgPadre', 'filterOrganismo'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', updateActiveFilters);
+        });
+
+        // Actualizar al cargar
+        setTimeout(updateActiveFilters, 1000);
+
+        // === FILTROS EN CASCADA ===
+        // Cuando cambia el año, actualizar las opciones de institución
+        document.getElementById('filterYear')?.addEventListener('change', function () {
+            updateCascadeFilters();
+        });
+
+        // Cuando cambia la institución, actualizar las opciones de organismo
+        document.getElementById('filterOrgPadre')?.addEventListener('change', function () {
+            updateOrganismoOptions();
+        });
+
+        function updateCascadeFilters() {
+            // Esta función se llamará después de que los datos estén cargados
+            // La lógica principal está en estadistica.js
+        }
+
+        // === RENDERIZAR GRÁFICOS SECCIONES 19 Y 20 ===
+        // Se ejecuta después de que el script principal cargue los datos
+        setTimeout(() => {
+            // Esperar a que allData esté disponible desde estadistica.js
+            if (typeof allData === 'undefined' || !allData.length) {
+                console.log('Esperando datos para secciones 19 y 20...');
+                return;
+            }
+
+            const data = typeof filteredData !== 'undefined' && filteredData.length ? filteredData : allData;
+
+            // === SECCIÓN 19: Análisis por Tipo de Cargo ===
+            // Índice de tipo_cargo en el array (según C.TIPO_CONTRATO = 6)
+            const TIPO_CARGO_IDX = 6;
+            const REM_BRUTA_IDX = 21;
+
+            // Contar por tipo de cargo
+            const tipoCargoCounts = {};
+            const tipoCargoSums = {};
+
+            data.forEach(r => {
+                const tipo = r[TIPO_CARGO_IDX] || 'Sin Clasificar';
+                const rem = parseFloat(r[REM_BRUTA_IDX]) || 0;
+
+                if (!tipoCargoCounts[tipo]) {
+                    tipoCargoCounts[tipo] = 0;
+                    tipoCargoSums[tipo] = 0;
+                }
+                tipoCargoCounts[tipo]++;
+                tipoCargoSums[tipo] += rem;
+            });
+
+            // Ordenar por cantidad y tomar top 8
+            const tiposOrdenados = Object.entries(tipoCargoCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8);
+
+            const tipoLabels = tiposOrdenados.map(t => t[0]);
+            const tipoData = tiposOrdenados.map(t => t[1]);
+            const tipoAvgRem = tiposOrdenados.map(t =>
+                Math.round(tipoCargoSums[t[0]] / tipoCargoCounts[t[0]])
+            );
+
+            // Gráfico 19.1 - Distribución por Tipo de Cargo
+            const ctx21_1 = document.getElementById('chart21_1');
+            if (ctx21_1 && typeof Chart !== 'undefined') {
+                new Chart(ctx21_1, {
+                    type: 'bar',
+                    data: {
+                        labels: tipoLabels,
+                        datasets: [{
+                            label: 'Cantidad',
+                            data: tipoData,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Gráfico 19.2 - Remuneración Promedio por Tipo de Cargo
+            const ctx21_2 = document.getElementById('chart21_2');
+            if (ctx21_2 && typeof Chart !== 'undefined') {
+                new Chart(ctx21_2, {
+                    type: 'bar',
+                    data: {
+                        labels: tipoLabels,
+                        datasets: [{
+                            label: 'Rem. Promedio (CLP)',
+                            data: tipoAvgRem,
+                            backgroundColor: '#10b981',
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    callback: v => '$' + (v / 1000000).toFixed(1) + 'M'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // === SECCIÓN 20: Análisis de Liquidez ===
+            // Nota: Si los datos tienen rem_liquida, usarla. Si no, estimarla como 80% de bruta
+            const ORG_PADRE_IDX = 17;
+
+            // Agrupar por organismo padre
+            const orgBrutoLiquido = {};
+
+            data.forEach(r => {
+                const org = r[ORG_PADRE_IDX] || 'Sin Clasificar';
+                const bruto = parseFloat(r[REM_BRUTA_IDX]) || 0;
+                // Estimamos líquido como ~78% del bruto (descuentos legales promedio)
+                const liquido = bruto * 0.78;
+
+                if (!orgBrutoLiquido[org]) {
+                    orgBrutoLiquido[org] = { bruto: 0, liquido: 0, count: 0 };
+                }
+                orgBrutoLiquido[org].bruto += bruto;
+                orgBrutoLiquido[org].liquido += liquido;
+                orgBrutoLiquido[org].count++;
+            });
+
+            // Top 10 por masa salarial bruta
+            const top10Orgs = Object.entries(orgBrutoLiquido)
+                .sort((a, b) => b[1].bruto - a[1].bruto)
+                .slice(0, 10);
+
+            const orgLabels = top10Orgs.map(o => o[0].substring(0, 25) + (o[0].length > 25 ? '...' : ''));
+            const orgBrutoData = top10Orgs.map(o => o[1].bruto / 1000000);
+            const orgLiquidoData = top10Orgs.map(o => o[1].liquido / 1000000);
+            const orgRatioData = top10Orgs.map(o =>
+                Math.round((o[1].liquido / o[1].bruto) * 100)
+            );
+
+            // Gráfico 20.1 - Comparativa Bruto vs Líquido
+            const ctx22_1 = document.getElementById('chart22_1');
+            if (ctx22_1 && typeof Chart !== 'undefined') {
+                new Chart(ctx22_1, {
+                    type: 'bar',
+                    data: {
+                        labels: orgLabels,
+                        datasets: [
+                            {
+                                label: 'Bruto (MM CLP)',
+                                data: orgBrutoData,
+                                backgroundColor: '#6366f1',
+                                borderRadius: 5
+                            },
+                            {
+                                label: 'Líquido Est. (MM CLP)',
+                                data: orgLiquidoData,
+                                backgroundColor: '#10b981',
+                                borderRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { position: 'top' } }
+                    }
+                });
+            }
+
+            // Gráfico 20.2 - Ratio Líquido/Bruto
+            const ctx22_2 = document.getElementById('chart22_2');
+            if (ctx22_2 && typeof Chart !== 'undefined') {
+                new Chart(ctx22_2, {
+                    type: 'bar',
+                    data: {
+                        labels: orgLabels,
+                        datasets: [{
+                            label: 'Ratio Líquido/Bruto %',
+                            data: orgRatioData,
+                            backgroundColor: orgRatioData.map(r => r >= 78 ? '#10b981' : '#f59e0b'),
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { min: 70, max: 85 }
+                        }
+                    }
+                });
+            }
+        }, 3000);
+    </script>
 </body>
 
 </html>
