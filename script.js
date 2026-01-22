@@ -39,6 +39,7 @@ const activeFilters = {
     anioSalida: new Set(),
     mesSalida: new Set(),
     tipoContrato: new Set(),
+    calificacion: new Set(),
     tcSalida: new Set()
 };
 
@@ -65,6 +66,7 @@ const els = {
         anioSalida: document.getElementById('filter-anio-salida'),
         mesSalida: document.getElementById('filter-mes-salida'),
         tipoContrato: document.getElementById('filter-tipo-contrato'),
+        calificacion: document.getElementById('filter-calificacion'),
         tcSalida: document.getElementById('filter-tc-salida'),
     },
     btnDownload: document.getElementById('btn-download'),
@@ -139,6 +141,7 @@ const filterConfigs = [
     { key: 'anioSalida', col: COL.ANIO_SALIDA, el: els.filters.anioSalida },
     { key: 'mesSalida', col: COL.MES_SALIDA, el: els.filters.mesSalida },
     { key: 'tipoContrato', col: COL.TIPO_CONTRATO, el: els.filters.tipoContrato },
+    { key: 'calificacion', col: COL.CALIFICACION, el: els.filters.calificacion },
     { key: 'tcSalida', col: COL.TC_SALIDA, el: els.filters.tcSalida },
 ];
 
@@ -436,6 +439,7 @@ function applyFilters() {
         if (activeFilters.anioSalida.size > 0 && !activeFilters.anioSalida.has(row[COL.ANIO_SALIDA])) return false;
         if (activeFilters.mesSalida.size > 0 && !activeFilters.mesSalida.has(row[COL.MES_SALIDA])) return false;
         if (activeFilters.tipoContrato.size > 0 && !activeFilters.tipoContrato.has(row[COL.TIPO_CONTRATO])) return false;
+        if (activeFilters.calificacion.size > 0 && !activeFilters.calificacion.has(row[COL.CALIFICACION])) return false;
         if (activeFilters.tcSalida.size > 0 && !activeFilters.tcSalida.has(row[COL.TC_SALIDA])) return false;
         return true;
     });
@@ -634,6 +638,27 @@ function updateStats() {
 function updateTable() {
     const totalRecords = filteredData.length;
     els.recordCount.textContent = `${totalRecords.toLocaleString()} Registros`;
+
+    if (totalRecords === 0) {
+        els.tableBody.innerHTML = `
+            <tr>
+                <td colspan="13" style="text-align: center; padding: 3rem;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span style="font-size: 1rem; font-weight: 500;">No se encontraron coincidencias</span>
+                        <span style="font-size: 0.85rem;">Intenta ajustar los filtros o tu búsqueda.</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+        els.pageInfo.textContent = `Página 0 de 0`;
+        els.prevBtn.disabled = true;
+        els.nextBtn.disabled = true;
+        return;
+    }
 
     const start = (currentPage - 1) * PAGE_SIZE;
     const end = start + PAGE_SIZE;
