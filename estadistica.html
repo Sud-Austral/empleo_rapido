@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - Empleo Público</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: { primary: '#6366f1', secondary: '#ec4899', accent: '#8b5cf6' }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --font-main: 'Outfit', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #f8fafc;
+            /* Subtle background pattern */
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 95%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 95%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 95%, 1) 0, transparent 50%);
+            min-height: 100vh;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        /* --- Header Styling --- */
+        .header-gradient {
+            background: var(--gradient-primary);
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            /* Clips the pseudo-element decoration */
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Decorative circle decoration */
+        .header-gradient::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 70%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            transform: rotate(-15deg);
+            pointer-events: none;
+            /* Critical: allows clicking filters underneath */
+            z-index: 0;
+        }
+
+        /* Ensure content sits above decoration */
+        .header-content-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Cards & Metrics --- */
+        .metric-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            /* Uniform height in grid */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #e2e8f0;
+        }
+
+        .icon-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            /* Squircle looks more modern */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+
+        /* Icon Color Variants */
+        .icon-circle.blue {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .icon-circle.green {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .icon-circle.purple {
+            background: #f5f3ff;
+            color: #8b5cf6;
+        }
+
+        .icon-circle.orange {
+            background: #fff7ed;
+            color: #f97316;
+        }
+
+        /* --- Sections & Charts --- */
+        .section-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #f8fafc;
+            padding-bottom: 1.5rem;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* --- Utilities --- */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 3rem 0;
+            opacity: 0.6;
+        }
+
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Anim */
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Back Button */
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-gradient {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex">
+        <main class="flex-1 p-6 max-w-[1600px] mx-auto w-full">
+            <!-- Header -->
+            <div class="header-gradient mb-8 animate-fade-in">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur">
+                                <i class="fas fa-chart-line text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-3xl font-bold">Resumen de Empleo Público</h1>
+                                <p class="text-white/80">Monitor de dotación y remuneraciones</p>
+                            </div>
+                        </div>
+                        <a href="index.html" class="btn-back">
+                            <i class="fas fa-table"></i> Ver Datos
+                        </a>
+                    </div>
+                    <div class="flex flex-wrap gap-4 mt-6">
+                        <div class="bg-white/10 backdrop-blur rounded-xl px-4 py-2 flex items-center gap-2">
+                            <i class="fas fa-database"></i>
+                            <span id="headerTotalRecords">...</span> registros
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl px-4 py-2 flex items-center gap-2">
+                            <i class="fas fa-coins"></i>
+                            Masa Salarial: <span id="headerTotalMoney">...</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl px-4 py-2 flex items-center gap-2">
+                            <i class="fas fa-clock"></i>
+                            Actualizado: <span id="lastUpdate">Hoy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Bar -->
+                <div class="mt-6 pt-6 border-t border-white/20">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Año Filter -->
+                        <div>
+                            <label class="block text-white/80 text-xs font-medium mb-1 ml-1" for="filterYear">Año de
+                                Entrada</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <select id="filterYear"
+                                    class="w-full bg-white/90 text-slate-700 text-sm rounded-lg pl-8 pr-3 py-2 outline-none focus:ring-2 focus:ring-white/50 border-0 cursor-pointer">
+                                    <option value="all">Todo el periodo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Org Padre Filter -->
+                        <div>
+                            <label class="block text-white/80 text-xs font-medium mb-1 ml-1"
+                                for="filterOrgPadre">Institución Padre</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-sitemap absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <select id="filterOrgPadre"
+                                    class="w-full bg-white/90 text-slate-700 text-sm rounded-lg pl-8 pr-3 py-2 outline-none focus:ring-2 focus:ring-white/50 border-0 cursor-pointer">
+                                    <option value="all">Todas las Instituciones</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Organismo Filter -->
+                        <div>
+                            <label class="block text-white/80 text-xs font-medium mb-1 ml-1"
+                                for="filterOrganismo">Organismo</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-building absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <select id="filterOrganismo"
+                                    class="w-full bg-white/90 text-slate-700 text-sm rounded-lg pl-8 pr-3 py-2 outline-none focus:ring-2 focus:ring-white/50 border-0 cursor-pointer">
+                                    <option value="all">Todos los Organismos</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- KPI Cards - Row 1 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 animate-fade-in"
+        style="animation-delay: 0.1s;">
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Total Funcionarios</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statTotalFuncionarios">...</p>
+                    <p class="text-xs text-green-500 mt-1"><i class="fas fa-user-check"></i> Registros activos
+                    </p>
+                </div>
+                <div class="icon-circle blue"><i class="fas fa-users"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Gasto Mensual Total</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statGastoTotal">...</p>
+                    <p class="text-xs text-blue-500 mt-1"><i class="fas fa-chart-line"></i> Suma Remuneraciones
+                    </p>
+                </div>
+                <div class="icon-circle green"><i class="fas fa-dollar-sign"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Remuneración Promedio</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statRemPromedio">...</p>
+                    <p class="text-xs text-purple-500 mt-1"><i class="fas fa-info-circle"></i> Bruto Mensual</p>
+                </div>
+                <div class="icon-circle purple"><i class="fas fa-wallet"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Edad Promedio</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statEdadPromedio">...</p>
+                    <p class="text-xs text-orange-500 mt-1"><i class="fas fa-birthday-cake"></i> Años</p>
+                </div>
+                <div class="icon-circle orange"><i class="fas fa-user-clock"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Cards - Row 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-fade-in"
+        style="animation-delay: 0.15s;">
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Mujeres</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statMujeres">...</p>
+                    <p class="text-xs text-pink-500 mt-1"><i class="fas fa-female"></i> Total</p>
+                </div>
+                <div class="icon-circle"
+                    style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #db2777;"><i
+                        class="fas fa-venus"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Hombres</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statHombres">...</p>
+                    <p class="text-xs text-blue-500 mt-1"><i class="fas fa-male"></i> Total</p>
+                </div>
+                <div class="icon-circle"
+                    style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); color: #4f46e5;"><i
+                        class="fas fa-mars"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Organismos</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statOrganismos">...</p>
+                    <p class="text-xs text-teal-500 mt-1"><i class="fas fa-building"></i> Distintos</p>
+                </div>
+                <div class="icon-circle"
+                    style="background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); color: #0d9488;"><i
+                        class="fas fa-landmark"></i></div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Mayor Remuneración</p>
+                    <p class="text-2xl font-bold text-gray-800" id="statMaxRemuneracion">...</p>
+                    <p class="text-xs text-amber-500 mt-1"><i class="fas fa-trophy"></i> Top</p>
+                </div>
+                <div class="icon-circle"
+                    style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #d97706;"><i
+                        class="fas fa-crown"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 1: Distribución -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);"><i
+                    class="fas fa-chart-pie"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Distribución General</h3>
+                <p class="section-description">Panorama de la composición de la fuerza laboral según modalidad
+                    contractual y género.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-file-contract"></i> Tipo de Contrato</h4>
+                <div class="chart-container"><canvas id="chart1_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-venus-mars"></i> Distribución por Sexo</h4>
+                <div class="chart-container"><canvas id="chart1_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 2: Ranking Organismos -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.25s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i
+                    class="fas fa-building"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Ranking Institucional</h3>
+                <p class="section-description">Organismos con mayor dotación y mayor gasto en personal.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-users"></i> Top Organismos (Dotación)</h4>
+                <div class="chart-container"><canvas id="chart2_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-money-bill-wave"></i> Top Organismos (Gasto)</h4>
+                <div class="chart-container"><canvas id="chart2_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 3: Análisis Salarial -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i
+                    class="fas fa-wallet"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Análisis Salarial</h3>
+                <p class="section-description">Distribución de remuneraciones promedio según tipo de contrato y
+                    evolución temporal de contrataciones.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-chart-bar"></i> Remuneración Promedio por Tipo</h4>
+                <div class="chart-container"><canvas id="chart3_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-history"></i> Ingresos por Fecha (Evolución)</h4>
+                <div class="chart-container"><canvas id="chart3_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Rangos Etarios -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.35s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i
+                    class="fas fa-user-clock"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Demografía</h3>
+                <p class="section-description">Distribución de los funcionarios según rangos de edad.</p>
+            </div>
+        </div>
+        <div class="w-full">
+            <div class="chart-card">
+                <h4><i class="fas fa-users"></i> Distribución por Rango Etario</h4>
+                <div class="chart-container"><canvas id="chart4_1"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Formación y Calificación -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.4s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);"><i
+                    class="fas fa-graduation-cap"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Formación Académica</h3>
+                <p class="section-description">Niveles de estudio y títulos profesionales más frecuentes en la
+                    administración.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-university"></i> Distribución por Calificación</h4>
+                <div class="chart-container"><canvas id="chart5_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-award"></i> Top Profesiones/Títulos</h4>
+                <div class="chart-container"><canvas id="chart5_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 6: Equidad de Género -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.45s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #ec4899, #be185d);"><i
+                    class="fas fa-balance-scale"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Equidad de Género</h3>
+                <p class="section-description">Análisis comparativo de remuneraciones y presencia por género.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-coins"></i> Brecha Salarial (Promedio)</h4>
+                <div class="chart-container"><canvas id="chart6_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-users-cog"></i> Participación por Estamento</h4>
+                <div class="chart-container"><canvas id="chart6_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 7: Análisis Detallado de Remuneraciones -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.5s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #14b8a6, #0f766e);"><i
+                    class="fas fa-money-check-alt"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Distribución de Ingresos</h3>
+                <p class="section-description">Segmentación de la fuerza laboral según tramos de ingresos brutos.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-layer-group"></i> Histogramas de Sueldo</h4>
+                <div class="chart-container"><canvas id="chart7_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-chart-line"></i> Evolución Promedio Anual</h4>
+                <div class="chart-container"><canvas id="chart7_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 8: Estacionalidad -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.55s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #f97316, #c2410c);"><i
+                    class="fas fa-calendar-alt"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Estacionalidad y Patrones</h3>
+                <p class="section-description">Análisis de actividad (registros) según el mes del año.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-sun"></i> Intensidad por Mes</h4>
+                <div class="chart-container"><canvas id="chart8_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-clock"></i> Variación Mensual</h4>
+                <div class="chart-container"><canvas id="chart8_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 9: Top Rankings Avanzados -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.6s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #6366f1, #4338ca);"><i
+                    class="fas fa-list-ol"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Rankings Avanzados</h3>
+                <p class="section-description">Instituciones destacadas por métricas específicas.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-hand-holding-usd"></i> Instituciones con Mejores Sueldos (Avg)</h4>
+                <div class="chart-container"><canvas id="chart9_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-user-graduate"></i> Instituciones con Más Profesionales</h4>
+                <div class="chart-container"><canvas id="chart9_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 10: Calidad del Dato -->
+    <div class="section-card animate-fade-in" style="animation-delay: 0.65s;">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #64748b, #334155);"><i
+                    class="fas fa-check-double"></i></div>
+            <div>
+                <h3 class="font-bold text-gray-800 text-lg">Salud de Datos</h3>
+                <p class="section-description">Métricas sobre la completitud y calidad de la información reportada.</p>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h4><i class="fas fa-exclamation-triangle"></i> Registros con Datos Faltantes</h4>
+                <div class="chart-container"><canvas id="chart10_1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4><i class="fas fa-percent"></i> Completitud por Campo</h4>
+                <div class="chart-container"><canvas id="chart10_2"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script src="estadistica.js?v=2"></script>
+</body>
+
+</html>
