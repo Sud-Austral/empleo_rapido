@@ -550,6 +550,87 @@
                 padding: 1.5rem;
             }
         }
+
+        /* Help Tooltip Styles */
+        .hint-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 0.5rem;
+            position: relative;
+            z-index: 100;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+        }
+
+
+        .hint-icon:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .hint-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #f1f5f9;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.5;
+            width: 320px;
+            max-width: 90vw;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            pointer-events: none;
+        }
+
+
+        .hint-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid #1e293b;
+        }
+
+        .hint-icon:hover .hint-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(12px);
+        }
+
+        .hint-tooltip strong {
+            color: #a5b4fc;
+            font-weight: 700;
+        }
+
+        .hint-tooltip ul {
+            margin: 0.5rem 0 0 0;
+            padding-left: 1rem;
+        }
+
+        .hint-tooltip li {
+            margin-bottom: 0.25rem;
+        }
     </style>
 </head>
 
@@ -585,11 +666,16 @@
                         </div>
                         <div class="text-sm font-semibold text-slate-700" id="lastUpdate">--/--/----</div>
                     </div>
+                    <a href="ayuda.html#estadisticas" class="btn-back"
+                        style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-color: #4f46e5;">
+                        <i class="fas fa-question-circle"></i> Ayuda
+                    </a>
                     <a href="index.html" class="btn-back">
                         <i class="fas fa-arrow-left"></i> Volver a Tabla
                     </a>
                 </div>
             </div>
+
 
             <div class="filter-panel">
                 <div>
@@ -735,7 +821,13 @@
                             <path d="M4 4h16v16H4V4z" />
                         </svg></div>
                     <span class="sec-title">1. Distribución Contractual</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Distribución de funcionarios según tipo
+                            de contrato (Planta, Contrata, Honorarios, Código del Trabajo).<br><br><strong>Gráfico
+                                2:</strong> Proporción de mujeres vs hombres en la dotación filtrada.</span>
+                    </span>
                 </div>
+
                 <div class="sec-body">
                     <div class="charts-row">
                         <div class="chart-box">
@@ -756,6 +848,11 @@
                     <div class="sec-icon-box" style="background:#ecfeff; color:#06b6d4"><i
                             class="fas fa-building-columns"></i></div>
                     <span class="sec-title">2. Panorama Institucional</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Top 10 organismos con mayor cantidad de
+                            funcionarios nuevos.<br><br><strong>Gráfico 2:</strong> Top 10 organismos con mayor gasto
+                            salarial total.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -778,6 +875,10 @@
                             class="fas fa-sack-dollar"></i>
                     </div>
                     <span class="sec-title">3. Análisis Remuneracional</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Remuneración bruta promedio según tipo de
+                            contrato.<br><br><strong>Gráfico 2:</strong> Evolución histórica de ingresos por año.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -799,6 +900,10 @@
                     <div class="sec-icon-box" style="background:#fff7ed; color:#ea580c"><i class="fas fa-users"></i>
                     </div>
                     <span class="sec-title">4. Demografía</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico:</strong> Distribución de funcionarios por rangos de
+                            edad estimados (18-30, 30-50, 50-65, 65+).</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="w-full">
@@ -816,6 +921,11 @@
                     <div class="sec-icon-box" style="background:#f0f9ff; color:#0ea5e9"><i
                             class="fas fa-graduation-cap"></i></div>
                     <span class="sec-title">5. Formación Académica</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Distribución por nivel educacional
+                            (Profesional, Técnico, etc.).<br><br><strong>Gráfico 2:</strong> Títulos profesionales más
+                            frecuentes.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -837,6 +947,11 @@
                     <div class="sec-icon-box" style="background:#fdf2f8; color:#db2777"><i
                             class="fas fa-scale-balanced"></i></div>
                     <span class="sec-title">6. Equidad de Género</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Comparación de remuneración promedio
+                            entre mujeres y hombres.<br><br><strong>Gráfico 2:</strong> Porcentaje de participación por
+                            género.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -858,6 +973,11 @@
                     <div class="sec-icon-box" style="background:#ecfdf5; color:#059669"><i class="fas fa-wallet"></i>
                     </div>
                     <span class="sec-title">7. Distribución de Ingresos</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Cantidad de funcionarios por rangos de
+                            sueldo (0-500k, 500k-1M, etc.).<br><br><strong>Gráfico 2:</strong> Evolución del sueldo
+                            promedio anual.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -882,6 +1002,11 @@
                             class="fas fa-ranking-star"></i>
                     </div>
                     <span class="sec-title">8. Rankings Avanzados</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Organismos con mayores sueldos
+                            promedio.<br><br><strong>Gráfico 2:</strong> Organismos con mayor dotación de
+                            profesionales.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -907,6 +1032,11 @@
                     <div class="sec-icon-box" style="background:#ecfdf5; color:#10b981"><i class="fas fa-seedling"></i>
                     </div>
                     <span class="sec-title">9. Talento Joven (< 30 Años)</span>
+                            <span class="hint-icon">?
+                                <span class="hint-tooltip"><strong>Gráfico 1:</strong> Top 10 organismos donde trabajan
+                                    más jóvenes.<br><br><strong>Gráfico 2:</strong> Comparación de sueldo promedio entre
+                                    jóvenes y el promedio general.</span>
+                            </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -929,6 +1059,11 @@
                             class="fas fa-user-clock"></i>
                     </div>
                     <span class="sec-title">10. Proyección de Retiro (> 60 Años)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Organismos con mayor dotación de
+                            funcionarios senior (>60 años).<br><br><strong>Gráfico 2:</strong> Proporción del costo de
+                            planilla senior vs resto.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -950,6 +1085,11 @@
                     <div class="sec-icon-box" style="background:#fefce8; color:#ca8a04"><i class="fas fa-crown"></i>
                     </div>
                     <span class="sec-title">11. Alta Dirección (Top 10% Ingresos)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Organismos con mayor concentración de
+                            sueldos altos (>$4M).<br><br><strong>Gráfico 2:</strong> Cuántas veces supera el sueldo
+                            elite al promedio general.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -972,6 +1112,11 @@
                             class="fas fa-layer-group"></i>
                     </div>
                     <span class="sec-title">12. Base Operativa (Sueldos Bajos)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Organismos con mayor cantidad de sueldos
+                            bajo $700k.<br><br><strong>Gráfico 2:</strong> Distribución por género en la base
+                            operativa.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -994,6 +1139,11 @@
                             class="fas fa-chart-area"></i>
                     </div>
                     <span class="sec-title">13. Dispersión Salarial Interna</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Diferencia absoluta entre sueldo máximo y
+                            mínimo por organismo.<br><br><strong>Gráfico 2:</strong> Ratio de dispersión (cuántas veces
+                            el máximo supera al mínimo).</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1015,6 +1165,11 @@
                     <div class="sec-icon-box" style="background:#ecfeff; color:#0891b2"><i class="fas fa-sitemap"></i>
                     </div>
                     <span class="sec-title">14. Estructura Organizacional</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Top 10 organismos por cantidad de
+                            funcionarios (distribución Pareto).<br><br><strong>Gráfico 2:</strong> Relación entre tamaño
+                            del organismo y sueldo promedio.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1037,6 +1192,11 @@
                             class="fas fa-user-graduate"></i>
                     </div>
                     <span class="sec-title">15. Grado de Profesionalización</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Proporción de profesionales vs técnicos
+                            vs otros.<br><br><strong>Gráfico 2:</strong> Diferencia salarial entre profesionales y
+                            técnicos.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1058,6 +1218,11 @@
                     <div class="sec-icon-box" style="background:#f8fafc; color:#475569"><i
                             class="fas fa-file-invoice-dollar"></i></div>
                     <span class="sec-title">16. Costo Laboral Per Cápita</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Ranking de organismos por costo promedio
+                            por funcionario.<br><br><strong>Gráfico 2:</strong> Gasto total de los organismos con mayor
+                            costo per cápita.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1079,6 +1244,11 @@
                     <div class="sec-icon-box" style="background:#eff6ff; color:#2563eb"><i
                             class="fas fa-arrow-trend-up"></i></div>
                     <span class="sec-title">17. Dinámica de Crecimiento</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Evolución histórica de nuevos ingresos
+                            por año.<br><br><strong>Gráfico 2:</strong> Variación porcentual anual de
+                            contrataciones.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1100,6 +1270,11 @@
                     <div class="sec-icon-box" style="background:#fef3c7; color:#d97706"><i
                             class="fas fa-hourglass-half"></i></div>
                     <span class="sec-title">18. Antigüedad Laboral</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Distribución de funcionarios por años de
+                            servicio (dato no disponible en esta versión).<br><br><strong>Gráfico 2:</strong> Promedio
+                            de antigüedad por organismo.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1120,7 +1295,12 @@
                 <div class="sec-header">
                     <div class="sec-icon-box" style="background:#dbeafe; color:#1d4ed8"><i class="fas fa-briefcase"></i>
                     </div>
-                    <span class="sec-title">19. Análisis por Tipo de Cargo</span>
+                    <span class="sec-title">19. Análisis por Tipo de Contrato</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Distribución de funcionarios según tipo
+                            de contrato.<br><br><strong>Gráfico 2:</strong> Remuneración promedio para cada tipo de
+                            contrato.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1143,6 +1323,11 @@
                             class="fas fa-money-check-alt"></i>
                     </div>
                     <span class="sec-title">20. Análisis de Liquidez</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Gráfico 1:</strong> Comparación sueldo bruto vs líquido
+                            estimado (78%) por institución.<br><br><strong>Gráfico 2:</strong> Ratio líquido/bruto por
+                            organismo.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="charts-row">
@@ -1165,6 +1350,11 @@
                             class="fas fa-comment-dots"></i>
                     </div>
                     <span class="sec-title">21. Nube de Cargos (Más Frecuentes)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Visualización:</strong> Nube de palabras mostrando los 40
+                            cargos más frecuentes. El tamaño representa la cantidad de funcionarios con ese
+                            cargo.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div id="wordCloudContainer"
@@ -1182,6 +1372,11 @@
                             class="fas fa-arrow-trend-up"></i>
                     </div>
                     <span class="sec-title">22. Top Ranking de Aumentos (Entrada vs Salida)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Tabla:</strong> Top 10 funcionarios con mayores aumentos
+                            salariales desde su ingreso. Muestra remuneración de entrada, actual, diferencia absoluta y
+                            porcentaje de aumento.</span>
+                    </span>
                 </div>
                 <div class="sec-body">
                     <div class="overflow-x-auto">
@@ -1210,7 +1405,13 @@
                     <div class="sec-icon-box" style="background:#ffedd5; color:#c2410c"><i class="fas fa-chart-pie"></i>
                     </div>
                     <span class="sec-title">23. Distribución de Gasto (Tree Map)</span>
+                    <span class="hint-icon">?
+                        <span class="hint-tooltip"><strong>Visualización:</strong> Mapa de distribución proporcional del
+                            gasto por Organismo Padre. El tamaño de cada bloque representa el porcentaje del gasto
+                            total.</span>
+                    </span>
                 </div>
+
                 <div class="sec-body">
                     <div id="treeMapContainer"
                         class="w-full h-[400px] bg-slate-100 rounded-xl relative overflow-hidden flex flex-wrap content-start">
@@ -1235,7 +1436,7 @@
     </button>
 
     <!-- Logic Script -->
-    <script src="estadistica.js?v=10"></script>
+    <script src="estadistica.js?v=11"></script>
 
     <!-- UI Enhancements Script -->
     <script>

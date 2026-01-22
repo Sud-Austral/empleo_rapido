@@ -435,7 +435,6 @@ function calculateAndRender(data) {
 
     // 12. Senior
     const topSeniorOrgs = Object.entries(count.senior.orgs).sort((a, b) => b[1] - a[1]).slice(0, 10);
-    console.log(count)
     renderBarH('chart12_1', topSeniorOrgs, 'Senior (>60)', '#f97316');
     // Dummy visualization for cost share
     const seniorShare = (count.senior.sumRem / sumRem) * 100;
