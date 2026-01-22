@@ -138,11 +138,15 @@ const filterConfigs = [
 async function init() {
     try {
         els.recordCount.textContent = 'Cargando datos (esto puede tardar unos segundos)...';
-        const response = await fetch('data.json');
+        const response = await fetch('data2.json.gz');
 
-        if (!response.ok) throw new Error('No se pudo cargar data.json');
+        if (!response.ok) throw new Error('No se pudo cargar data2.json.gz');
 
-        const json = await response.json();
+        // Decompress the GZIP file client-side
+        const ds = new DecompressionStream('gzip');
+        const decompressedResponse = new Response(response.body.pipeThrough(ds));
+        const json = await decompressedResponse.json();
+
         allData = Array.isArray(json) ? json : [];
 
         filteredData = allData;
@@ -194,7 +198,7 @@ async function init() {
     } catch (e) {
         console.error(e);
         els.recordCount.textContent = 'Error cargando datos.';
-        alert('Error cargando data.json. Asegúrate de ejecutar esto en un servidor local.');
+        alert('Error cargando data2.json.gz. Asegúrate de que el navegador soporte DecompressionStream y de ejecutar esto en un servidor local.');
     }
 }
 
