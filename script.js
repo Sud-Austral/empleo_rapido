@@ -15,7 +15,9 @@ const COL = {
     FECHA_SALIDA_TS: 25,
     PAGOS: 26,
     TC_SALIDA: 23,
-    REM_BRUTA: 21
+    REM_BRUTA: 21,
+    CARGO_ENTRADA: 27,
+    CARGO_SALIDA: 28
 };
 
 let allData = [];
@@ -23,7 +25,9 @@ let filteredData = [];
 const PAGE_SIZE = 100;
 let currentPage = 1;
 let searchQuery = '';
+let searchCargoQuery = '';
 let searchDebounceTimer;
+let searchCargoDebounceTimer;
 let currentSort = { col: null, dir: 'asc' };
 
 // Global state for selected filters
@@ -46,7 +50,10 @@ const els = {
     nextBtn: document.getElementById('next-page'),
     pageInfo: document.getElementById('page-info'),
     searchInput: document.getElementById('search-input'),
-    searchInput: document.getElementById('search-input'),
+    searchCargoInput: document.getElementById('search-cargo'),
+    activeFiltersBar: document.getElementById('active-filters-bar'),
+    activeFiltersList: document.getElementById('active-filters-list'),
+    btnClearFilters: document.getElementById('btn-clear-filters'),
     modal: document.getElementById('details-modal'),
     modalBody: document.getElementById('modal-details-body'),
     closeModalBtn: document.getElementById('close-modal'),
@@ -169,6 +176,23 @@ async function init() {
             });
         }
 
+        // Cargo Search Listener
+        if (els.searchCargoInput) {
+            els.searchCargoInput.addEventListener('input', (e) => {
+                clearTimeout(searchCargoDebounceTimer);
+                searchCargoDebounceTimer = setTimeout(() => {
+                    searchCargoQuery = e.target.value.toLowerCase().trim();
+                    renderAllFilters();
+                    applyFilters();
+                }, 300);
+            });
+        }
+
+        // Clear Filters Listener
+        if (els.btnClearFilters) {
+            els.btnClearFilters.addEventListener('click', clearFilters);
+        }
+
         // Sorting Listeners
         document.querySelectorAll('th[data-col]').forEach(th => {
             th.addEventListener('click', () => {
@@ -218,6 +242,67 @@ function toggleFilter(category, value, infoDiv) {
 
     // 2. Update the main data table
     applyFilters();
+    renderActiveFilters();
+}
+
+function clearFilters() {
+    // Clear Sets
+    Object.keys(activeFilters).forEach(key => activeFilters[key].clear());
+
+    // Clear Inputs
+    searchQuery = '';
+    searchCargoQuery = '';
+    if (els.searchInput) els.searchInput.value = '';
+    if (els.searchCargoInput) els.searchCargoInput.value = '';
+
+    // Re-render
+    renderAllFilters();
+    applyFilters();
+    renderActiveFilters();
+}
+
+function renderActiveFilters() {
+    if (!els.activeFiltersBar || !els.activeFiltersList) return;
+
+    els.activeFiltersList.innerHTML = '';
+    let hasFilters = false;
+
+    // Iterate over activeFilters
+    Object.keys(activeFilters).forEach(key => {
+        const set = activeFilters[key];
+        if (set.size > 0) {
+            hasFilters = true;
+            set.forEach(val => {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    <span>${val}</span>
+                    <div class="remove-filter" title="Quitar filtro">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                `;
+                // Add click listener to remove
+                chip.querySelector('.remove-filter').addEventListener('click', () => {
+                    // Toggle off
+                    // Note: We need to find the element in DOM to pass to toggleFilter if we followed that pattern?
+                    // toggleFilter(targetConfig.key, val, div);
+                    // But toggleFilter uses 'div' argument to toggle class... which rerenders anyway.
+                    // So we can pass null.
+                    toggleFilter(key, val, null);
+                });
+                els.activeFiltersList.appendChild(chip);
+            });
+        }
+    });
+
+    if (hasFilters) {
+        els.activeFiltersBar.classList.remove('hidden');
+    } else {
+        els.activeFiltersBar.classList.add('hidden');
+    }
 }
 
 /**
@@ -251,6 +336,17 @@ function renderAllFilters() {
                 const rut = String(row[COL.RUT] || '').toLowerCase();
                 const nombre = String(row[COL.NOMBRE] || '').toLowerCase();
                 const fullText = rut + ' ' + nombre;
+
+                const matches = searchTerms.every(term => fullText.includes(term));
+                if (!matches) return false;
+            }
+
+            // Check Cargo Search
+            if (searchCargoQuery) {
+                const searchTerms = searchCargoQuery.split(/\s+/);
+                const cargoIn = String(row[COL.CARGO_ENTRADA] || '').toLowerCase();
+                const cargoOut = String(row[COL.CARGO_SALIDA] || '').toLowerCase();
+                const fullText = cargoIn + ' ' + cargoOut;
 
                 const matches = searchTerms.every(term => fullText.includes(term));
                 if (!matches) return false;
@@ -317,6 +413,17 @@ function applyFilters() {
             const rut = String(row[COL.RUT] || '').toLowerCase();
             const nombre = String(row[COL.NOMBRE] || '').toLowerCase();
             const fullText = rut + ' ' + nombre;
+
+            const matches = searchTerms.every(term => fullText.includes(term));
+            if (!matches) return false;
+        }
+
+        // Cargo Search
+        if (searchCargoQuery) {
+            const searchTerms = searchCargoQuery.split(/\s+/);
+            const cargoIn = String(row[COL.CARGO_ENTRADA] || '').toLowerCase();
+            const cargoOut = String(row[COL.CARGO_SALIDA] || '').toLowerCase();
+            const fullText = cargoIn + ' ' + cargoOut;
 
             const matches = searchTerms.every(term => fullText.includes(term));
             if (!matches) return false;

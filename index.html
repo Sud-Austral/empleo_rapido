@@ -23,6 +23,9 @@
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Buscar por Nombre o RUT...">
                 </div>
+                <div class="search-box">
+                    <input type="text" id="search-cargo" placeholder="Buscar por Cargo...">
+                </div>
                 <button id="btn-download" class="header-btn" title="Descargar Excel">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,6 +48,12 @@
 
         <main class="main-content">
             <aside class="filters-panel">
+                <div class="filters-header"
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="margin:0; font-size:0.9rem; color:var(--primary-color);">Filtros</h3>
+                    <button id="btn-clear-filters" class="btn-text"
+                        style="padding:0.25rem 0.5rem; font-size:0.75rem;">Limpiar</button>
+                </div>
                 <div class="filter-group">
                     <label>Org Padre</label>
                     <div class="filter-options" id="filter-org-padre"></div>
@@ -87,6 +96,12 @@
                 <div class="stats-container" id="stats-container">
                     <!-- Stats injected by JS -->
                 </div>
+
+                <div id="active-filters-bar" class="active-filters-bar hidden">
+                    <span class="active-filters-label">Filtros activos:</span>
+                    <div id="active-filters-list" class="active-filters-list"></div>
+                </div>
+
                 <div class="table-container">
                     <table id="data-table">
                         <thead>
