@@ -143,7 +143,8 @@
             <div class="warning-box">
                 <p><strong>Limitaciones de los datos:</strong> Esta herramienta debe ser considerada como
                     <strong>referencial y no definitiva</strong>. Sirve para hacerse una idea del personal NUEVO
-                    contratado, pero se recomienda verificar caso a caso (remuneraciones, calificaciones, etc.).</p>
+                    contratado, pero se recomienda verificar caso a caso (remuneraciones, calificaciones, etc.).
+                </p>
             </div>
 
             <h3>Fuente de Datos</h3>
@@ -195,51 +196,76 @@
                 <li><strong>Sin Historial Previo:</strong> Personas que NO tenían registros de pagos anteriores (según
                     la data disponible en CPLT), asumiendo que son "nuevos" en el Estado.</li>
                 <li><strong>Vigencia:</strong> Personas que tienen registros de pagos informados más allá de
-                    <strong>Junio 2025</strong>, sugiriendo que siguen activos.</li>
+                    <strong>Junio 2025</strong>, sugiriendo que siguen activos.
+                </li>
             </ul>
             <p><em>Nota: Se han excluido los Organismos Municipales, enfocándose solo en la administración
                     centralizada.</em></p>
         </div>
 
         <div class="help-section">
-            <h2>Tutorial de Uso</h2>
-            <p>Aprende a sacar el máximo provecho al dashboard de Empleo Rápido.</p>
+            <h2>Guía de Uso del Dashboard</h2>
+            <p>Maximice el potencial de la herramienta siguiendo estos pasos estratégicos para la consulta de
+                información:</p>
 
             <div class="tutorial-step">
                 <div class="step-number">1</div>
                 <div>
-                    <strong>Filtrar Personal</strong>
-                    <p>Usa el panel izquierdo para seleccionar organismos, fechas de ingreso, rangos de edad o tipos de
-                        contrato. Los filtros funcionan "en cascada": si eliges un Ministerio, solo verás los servicios
-                        dependientes de él.</p>
+                    <strong>Filtrado Multidimensional</strong>
+                    <p>Utilice el panel lateral izquierdo para segmentar la base de datos. Los filtros operan con lógica
+                        en "cascada", lo que significa que al seleccionar un <em>Organismo Padre</em> (ej. Ministerio),
+                        las opciones de <em>Organismo</em> se refinarán automáticamente. Dispone de selectores para
+                        fecha de entrada, fecha de salida (si aplica), y tipología contractual tanto al ingreso como al
+                        egreso.</p>
                 </div>
             </div>
 
             <div class="tutorial-step">
                 <div class="step-number">2</div>
                 <div>
-                    <strong>Buscar por Nombre</strong>
-                    <p>Usa la barra superior para buscar personas específicas por Nombre o RUT. La tabla se actualizará
-                        instantáneamente.</p>
+                    <strong>Búsqueda Avanzada</strong>
+                    <p>Localice rápidamente a funcionarios específicos utilizando la barra de búsqueda superior. El
+                        sistema permite la consulta mediante <strong>Nombre Completo</strong> o <strong>RUT</strong>,
+                        actualizando la tabla de resultados en tiempo real.</p>
                 </div>
             </div>
 
             <div class="tutorial-step">
                 <div class="step-number">3</div>
                 <div>
-                    <strong>Ordenar Resultados</strong>
-                    <p>Haz clic en los encabezados de la tabla (ej: "Remuneración") para ordenar los resultados de mayor
-                        a menor y detectar casos atípicos.</p>
+                    <strong>Análisis Comparativo y Detalle</strong>
+                    <p>Al seleccionar cualquier registro de la tabla, se desplegará una ficha técnica detallada. Esta
+                        vista modal permite contrastar las condiciones contractuales iniciales (Entrada) versus las
+                        finales (Salida/Actualidad), facilitando la detección de variaciones en remuneraciones, cargos y
+                        estamentos.</p>
                 </div>
             </div>
 
             <div class="tutorial-step">
                 <div class="step-number">4</div>
                 <div>
-                    <strong>Ver Detalle y Comparar</strong>
-                    <p>Haz clic en cualquier fila de la tabla para abrir una ficha detallada. Allí podrás ver una
-                        <strong>comparativa directa</strong> entre las condiciones de ingreso (Entrada) y las
-                        condiciones actuales o de salida (Salida), incluyendo cambios de sueldo y cargo.</p>
+                    <strong>Estadísticas y Métricas</strong>
+                    <p>El panel superior proporciona un resumen ejecutivo instantáneo de los datos filtrados,
+                        clasificando los registros por tipo de contrato (Planta, Contrata, Honorarios, Código del
+                        Trabajo). Cada tarjeta informativa muestra el volumen de registros, su peso porcentual respecto
+                        al total y el promedio de remuneración bruta de salida asociada.</p>
+                </div>
+            </div>
+
+            <div class="tutorial-step">
+                <div class="step-number">5</div>
+                <div>
+                    <strong>Exportación de Datos</strong>
+                    <p>Para análisis externos o elaboración de informes, utilice el botón de descarga <svg
+                            xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            style="vertical-align: middle; margin-bottom: 2px;" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg> situado en la cabecera. Esto generará un archivo formato <strong>Excel (.xlsx)</strong>
+                        con la totalidad de los registros actualmente visibles en pantalla, incluyendo todos los campos
+                        detallados.</p>
                 </div>
             </div>
         </div>
