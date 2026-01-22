@@ -1166,6 +1166,13 @@
     <!-- Barra de progreso de scroll -->
     <div id="scrollProgress"></div>
 
+    <!-- Botón Volver Arriba -->
+    <button id="btnScrollTop"
+        class="fixed bottom-8 right-8 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition-all duration-300 transform translate-y-20 opacity-0 z-50 focus:outline-none hover:scale-110 active:scale-95 group border-2 border-white/20 backdrop-blur-sm"
+        aria-label="Volver arriba">
+        <i class="fas fa-arrow-up text-lg group-hover:-translate-y-1 transition-transform"></i>
+    </button>
+
     <!-- Logic Script -->
     <script src="estadistica.js?v=7"></script>
 
@@ -1476,6 +1483,25 @@
                 });
             }
         }, 3000);
+        // === BOTÓN SCROLL TOP ===
+        const btnScrollTop = document.getElementById('btnScrollTop');
+
+        if (btnScrollTop) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    btnScrollTop.classList.remove('translate-y-20', 'opacity-0');
+                } else {
+                    btnScrollTop.classList.add('translate-y-20', 'opacity-0');
+                }
+            });
+
+            btnScrollTop.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
     </script>
 </body>
 
