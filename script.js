@@ -70,9 +70,47 @@ const els = {
         tcSalida: document.getElementById('filter-tc-salida'),
     },
     btnDownload: document.getElementById('btn-download'),
+    sidebarPanel: document.getElementById('filters-panel'),
+    sidebarToggle: document.getElementById('sidebar-toggle'),
+    paginationNumbers: document.getElementById('pagination-numbers'),
+    filterSearches: {
+        organismo: document.getElementById('search-filter-organismo'),
+        calificacion: document.getElementById('search-filter-calificacion'),
+    }
+};
+
+const filterSearchQueries = {
+    organismo: '',
+    calificacion: '',
 };
 
 // ... (existing code) ...
+
+function showToast(message, duration = 3000) {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('removing');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, duration);
+}
 
 function downloadExcel() {
     if (!filteredData || filteredData.length === 0) {
@@ -80,56 +118,54 @@ function downloadExcel() {
         return;
     }
 
-    // Prepare data for Excel
-    // We map filteredData to objects with the specific headers we want
-    const dataForSheet = filteredData.map(row => {
-        // Safe getter
-        const g = (i) => {
-            let val = row[i];
-            if (val === null || val === undefined) return "";
-            return val;
-        };
+    showToast(`Descargando ${filteredData.length.toLocaleString()} registros...`);
 
-        return {
-            "Código Organismo": g(0),
-            "Organismo": g(1),
-            "Año Entrada": g(2),
-            "Mes Entrada": g(3),
-            "Remuneración Bruta Entrada": g(4),
-            "Remuneración Líquida Entrada": g(5),
-            "Tipo Contrato Entrada": g(6),
-            "Nombre Base Datos": g(7),
-            "RUT": g(8),
-            "Nombre": g(9),
-            "Calificación Entrada": g(10),
-            "Clase de Edad": g(11),
-            "Sexo": g(12),
-            "Fecha Ingreso": g(13),
-            "Código Org Padre": g(16),
-            "Organismo Padre": g(17),
-            "Es Municipal": g(18),
-            "Año Salida": g(19),
-            "Mes Salida": g(20),
-            "Remuneración Bruta Salida": g(21),
-            "Remuneración Líquida Salida": g(22),
-            "Tipo Contrato Salida": g(23),
-            "Calificación Salida": g(24),
-            "Fecha Salida": g(25),
-            "Número de Pagos": g(26),
-            "Cargo Entrada": g(27),
-            "Cargo Salida": g(28)
-        };
-    });
+    // Use setTimeout to allow the toast to show before blocking thread with XLSX processing
+    setTimeout(() => {
+        // Prepare data for Excel
+        const dataForSheet = filteredData.map(row => {
+            const g = (i) => {
+                let val = row[i];
+                if (val === null || val === undefined) return "";
+                return val;
+            };
 
-    // Create Worksheet
-    const ws = XLSX.utils.json_to_sheet(dataForSheet);
+            return {
+                "Código Organismo": g(0),
+                "Organismo": g(1),
+                "Año Entrada": g(2),
+                "Mes Entrada": g(3),
+                "Remuneración Bruta Entrada": g(4),
+                "Remuneración Líquida Entrada": g(5),
+                "Tipo Contrato Entrada": g(6),
+                "Nombre Base Datos": g(7),
+                "RUT": g(8),
+                "Nombre": g(9),
+                "Calificación Entrada": g(10),
+                "Clase de Edad": g(11),
+                "Sexo": g(12),
+                "Fecha Ingreso": g(13),
+                "Código Org Padre": g(16),
+                "Organismo Padre": g(17),
+                "Es Municipal": g(18),
+                "Año Salida": g(19),
+                "Mes Salida": g(20),
+                "Remuneración Bruta Salida": g(21),
+                "Remuneración Líquida Salida": g(22),
+                "Tipo Contrato Salida": g(23),
+                "Calificación Salida": g(24),
+                "Fecha Salida": g(25),
+                "Número de Pagos": g(26),
+                "Cargo Entrada": g(27),
+                "Cargo Salida": g(28)
+            };
+        });
 
-    // Create Workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Datos Empleo");
-
-    // Save File
-    XLSX.writeFile(wb, "empleo_rapido_export.xlsx");
+        const ws = XLSX.utils.json_to_sheet(dataForSheet);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Datos Empleo");
+        XLSX.writeFile(wb, "empleo_rapido_export.xlsx");
+    }, 100);
 }
 
 // Helper for filter configs
@@ -147,10 +183,10 @@ const filterConfigs = [
 
 async function init() {
     try {
-        els.recordCount.textContent = 'Cargando datos (esto puede tardar unos segundos)...';
-        const response = await fetch('data2.json.gz');
+        els.recordCount.textContent = 'Cargando datos municipales (esto puede tardar unos segundos)...';
+        const response = await fetch('../data2_muni.json.gz');
 
-        if (!response.ok) throw new Error('No se pudo cargar data2.json.gz');
+        if (!response.ok) throw new Error('No se pudo cargar data2_muni.json.gz');
 
         // Decompress the GZIP file client-side
         const ds = new DecompressionStream('gzip');
@@ -222,10 +258,42 @@ async function init() {
             els.btnDownload.addEventListener('click', downloadExcel);
         }
 
+        // Sidebar Toggle (Desktop)
+        if (els.sidebarToggle) {
+            els.sidebarToggle.addEventListener('click', () => {
+                els.sidebarPanel.classList.toggle('collapsed');
+            });
+        }
+
+        // Mobile Filter Drawer logic
+        const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+        const closeFiltersMobile = document.getElementById('close-filters-mobile');
+        if (mobileFilterBtn) {
+            mobileFilterBtn.addEventListener('click', () => {
+                els.sidebarPanel.classList.add('open');
+            });
+        }
+        if (closeFiltersMobile) {
+            closeFiltersMobile.addEventListener('click', () => {
+                els.sidebarPanel.classList.remove('open');
+            });
+        }
+
+        // Filter Search Listeners
+        Object.keys(els.filterSearches).forEach(key => {
+            const input = els.filterSearches[key];
+            if (input) {
+                input.addEventListener('input', (e) => {
+                    filterSearchQueries[key] = e.target.value.toLowerCase().trim();
+                    renderAllFilters();
+                });
+            }
+        });
+
     } catch (e) {
         console.error(e);
         els.recordCount.textContent = 'Error cargando datos.';
-        alert('Error cargando data2.json.gz. Asegúrate de que el navegador soporte DecompressionStream y de ejecutar esto en un servidor local.');
+        alert('Error cargando data2_muni.json.gz. Asegúrate de que el navegador soporte DecompressionStream.');
     }
 }
 
@@ -278,22 +346,21 @@ function renderActiveFilters() {
             set.forEach(val => {
                 const chip = document.createElement('div');
                 chip.className = 'filter-chip';
+                // Add labels for better UX
+                let label = key;
+                if (key === 'orgPadre') label = 'Org Padre';
+                else if (key === 'anio') label = 'Año';
+                else if (key === 'mes') label = 'Mes';
+
                 chip.innerHTML = `
+                    <span style="color:var(--text-secondary); margin-right:4px;">${label}:</span>
                     <span>${val}</span>
                     <div class="remove-filter" title="Quitar filtro">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
+                        &times;
                     </div>
                 `;
                 // Add click listener to remove
                 chip.querySelector('.remove-filter').addEventListener('click', () => {
-                    // Toggle off
-                    // Note: We need to find the element in DOM to pass to toggleFilter if we followed that pattern?
-                    // toggleFilter(targetConfig.key, val, div);
-                    // But toggleFilter uses 'div' argument to toggle class... which rerenders anyway.
-                    // So we can pass null.
                     toggleFilter(key, val, null);
                 });
                 els.activeFiltersList.appendChild(chip);
@@ -369,12 +436,24 @@ function renderAllFilters() {
 
         const sortedValues = Array.from(uniqueValues).sort();
 
+        // Update Badge
+        const badge = document.getElementById(`count-${targetConfig.key}`);
+        if (badge) {
+            const count = activeFilters[targetConfig.key].size;
+            badge.textContent = count;
+            badge.classList.toggle('active', count > 0);
+        }
+
         // 3. Render the list
-        // Optimization: updating innerHTML is fast enough for ~100 items. 
-        // For 'Organismo' (potentially thousands), it might be heavy, but DOM usually handles <5000 nodes ok.
         targetConfig.el.innerHTML = '';
 
+        const searchQueryForFilter = filterSearchQueries[targetConfig.key] || '';
+
         sortedValues.forEach(val => {
+            if (searchQueryForFilter && !String(val).toLowerCase().includes(searchQueryForFilter)) {
+                return;
+            }
+
             const div = document.createElement('div');
             div.className = 'filter-item';
             if (activeFilters[targetConfig.key].has(val)) {
@@ -384,14 +463,6 @@ function renderAllFilters() {
             div.onclick = () => toggleFilter(targetConfig.key, val, div);
             targetConfig.el.appendChild(div);
         });
-
-        // 4. Clean up invalid selections?
-        // If a value was selected in activeFilters[targetConfig.key] but is NOT in uniqueValues,
-        // it means it's no longer compatible with other filters.
-        // We should probably remove it from activeFilters so the Data Table doesn't show 0 results unnecessarily?
-        // Or keep it? Standard simple cascade: Valid Options Only.
-        // If we simply don't render it, the user can't unclick it. 
-        // Let's remove invalid selections from the Set to keep state clean.
 
         const currentSelection = new Set(activeFilters[targetConfig.key]);
         currentSelection.forEach(selectedVal => {
@@ -502,81 +573,28 @@ function updateSortIcons() {
 }
 
 function updateStats() {
-    const counts = {};
-    const sums = {}; // Track sum of REM_BRUTA for each type
+    const stats = {};
     let total = 0;
-
-    // We also want total average
     let totalSum = 0;
     let totalCountWithRem = 0;
+    let totalAgeSum = 0;
+    let totalAgeCount = 0;
 
-    filteredData.forEach(row => {
-        let type = row[COL.TC_SALIDA] || row[COL.TIPO_CONTRATO] || 'Sin Clasificar';
-
-        counts[type] = (counts[type] || 0) + 1;
-
-        // Sum Remuneration
-        let rem = row[COL.REM_BRUTA];
-        if (typeof rem === 'number' && !isNaN(rem)) {
-            sums[type] = (sums[type] || 0) + rem;
-            totalSum += rem;
-            totalCountWithRem++;
+    const parseAgeStr = (str) => {
+        if (!str) return null;
+        const s = String(str).toUpperCase();
+        if (s.includes('ENTRE')) {
+            const matches = s.match(/\d+/g);
+            if (matches && matches.length >= 2) return (parseInt(matches[0]) + parseInt(matches[1])) / 2;
         }
-
-        total++;
-    });
-
-    const statsContainer = document.getElementById('stats-container');
-    if (!statsContainer) return;
-
-    const sortedKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-
-    const globalAvg = totalCountWithRem > 0 ? Math.round(totalSum / totalCountWithRem) : 0;
-    const fmtMoney = (v) => '$ ' + v.toLocaleString('es-CL');
-
-    let html = `
-        <div class="stat-card total">
-            <span class="stat-label">Total</span>
-            <span class="stat-value">${total.toLocaleString()}</span>
-            <span class="stat-subtext">Promedio: ${fmtMoney(globalAvg)}</span>
-        </div>
-    `;
-
-    sortedKeys.forEach(key => {
-        let cardClass = 'stat-card';
-        const k = key.toLowerCase();
-        if (k.includes('contrata')) cardClass += ' contrata';
-        else if (k.includes('honorarios')) cardClass += ' honorarios';
-        else if (k.includes('planta')) cardClass += ' planta';
-        else if (k.includes('trabajo')) cardClass += ' cod-trabajo';
-
-        const count = counts[key];
-        const percent = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-
-        // Calculate Avg for this group
-        // Note: we can't assume all items in 'count' had a valid number, but usually yes. 
-        // Ideally we track countWithRem per group. But let's assume valid records mostly have rem.
-        // Actually safe way is to track count per group in same loop. 
-        // But to keep it simple, we'll divide by the count of items in that group. 
-        // If some items have NaN rem, they didn't add to sum, so avg might be slightly skewed if we divide by total count including NaNs.
-        // Correct approach: track valid counts.
-
-        // Let's re-loop or just accept small skews? No, let's do it right.
-        // I will use a separate countsWithRem object.
-    });
-
-    // --- REDOLING LOGIC TO INCLUDE VALID REM COUNTS ---
-
-    // Reset stats for re-calculation inside function
-    const stats = {}; // { key: { count: 0, sum: 0, validRemCount: 0 } }
-
-    total = 0;
-    totalSum = 0;
-    totalCountWithRem = 0;
+        if (s.includes('MENOR')) return 18;
+        if (s.includes('MAYOR')) return 65;
+        const n = parseInt(s);
+        return isNaN(n) ? null : n;
+    };
 
     filteredData.forEach(row => {
         let type = row[COL.TC_SALIDA] || row[COL.TIPO_CONTRATO] || 'Sin Clasificar';
-
         if (!stats[type]) stats[type] = { count: 0, sum: 0, validRemCount: 0 };
 
         stats[type].count++;
@@ -586,28 +604,38 @@ function updateStats() {
         if (typeof rem === 'number' && !isNaN(rem)) {
             stats[type].sum += rem;
             stats[type].validRemCount++;
-
             totalSum += rem;
             totalCountWithRem++;
         }
+
+        let age = parseAgeStr(row[COL.EDAD]);
+        if (age) {
+            totalAgeSum += age;
+            totalAgeCount++;
+        }
     });
+
+    const statsContainer = document.getElementById('stats-container');
+    if (!statsContainer) return;
 
     const sortedStatsKeys = Object.keys(stats).sort((a, b) => stats[b].count - stats[a].count);
     const globalAvgFinal = totalCountWithRem > 0 ? Math.round(totalSum / totalCountWithRem) : 0;
+    const globalAvgAge = totalAgeCount > 0 ? Math.round(totalAgeSum / totalAgeCount) : 0;
+    const fmtMoney = (v) => '$ ' + v.toLocaleString('es-CL');
 
-    html = `
+    let html = `
         <div class="stat-card total">
-            <span class="stat-label">Total</span>
             <span class="stat-value">${total.toLocaleString()}</span>
-            <span class="stat-subtext">Registros Totales</span>
-            <div class="stat-avg-container">
-                <span class="stat-avg-label" style="color: rgba(255,255,255,0.8);">Prom. Bruta Salida</span>
-                <span class="stat-avg-value" style="color:white;">${fmtMoney(globalAvgFinal)}</span>
+            <span class="stat-label">Personas registradas</span>
+            <div style="margin-top:auto; padding-top:1rem; display:flex; gap:1rem; font-size:0.75rem; color:var(--text-secondary);">
+                <div>Prom. Bruta: <b>${fmtMoney(globalAvgFinal)}</b></div>
+                <div>Edad Prom.: <b>${globalAvgAge} años</b></div>
             </div>
         </div>
     `;
 
-    sortedStatsKeys.forEach(key => {
+    // Only show top 3 types in KPIs to avoid overcrowding
+    sortedStatsKeys.slice(0, 3).forEach(key => {
         let cardClass = 'stat-card';
         const k = key.toLowerCase();
         if (k.includes('contrata')) cardClass += ' contrata';
@@ -616,17 +644,14 @@ function updateStats() {
         else if (k.includes('trabajo')) cardClass += ' cod-trabajo';
 
         const data = stats[key];
-        const percent = total > 0 ? ((data.count / total) * 100).toFixed(1) : 0;
         const avg = data.validRemCount > 0 ? Math.round(data.sum / data.validRemCount) : 0;
 
         html += `
             <div class="${cardClass}">
-                <span class="stat-label">${key}</span>
                 <span class="stat-value">${data.count.toLocaleString()}</span>
-                <span class="stat-subtext">${percent}% del total</span>
-                <div class="stat-avg-container">
-                    <span class="stat-avg-label">Prom. Bruta Salida</span>
-                    <span class="stat-avg-value">${fmtMoney(avg)}</span>
+                <span class="stat-label">${key}</span>
+                <div style="margin-top:auto; padding-top:1rem; font-size:0.75rem; color:var(--text-secondary);">
+                    Promedio: <b>${fmtMoney(avg)}</b>
                 </div>
             </div>
         `;
@@ -637,95 +662,131 @@ function updateStats() {
 
 function updateTable() {
     const totalRecords = filteredData.length;
-    els.recordCount.textContent = `${totalRecords.toLocaleString()} Registros`;
+    els.recordCount.textContent = `${totalRecords.toLocaleString()} resultados encontrados`;
 
-    if (totalRecords === 0) {
-        els.tableBody.innerHTML = `
-            <tr>
-                <td colspan="13" style="text-align: center; padding: 3rem;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-secondary);">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <span style="font-size: 1rem; font-weight: 500;">No se encontraron coincidencias</span>
-                        <span style="font-size: 0.85rem;">Intenta ajustar los filtros o tu búsqueda.</span>
-                    </div>
-                </td>
-            </tr>
-        `;
-        els.pageInfo.textContent = `Página 0 de 0`;
-        els.prevBtn.disabled = true;
-        els.nextBtn.disabled = true;
-        return;
-    }
+    // Show Skeleton State
+    els.tableBody.innerHTML = Array(10).fill(0).map(() => `
+        <tr class="skeleton-row">
+            <td colspan="13"><div class="skeleton" style="height: 20px; width: 100%;"></div></td>
+        </tr>
+    `).join('');
 
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    const pageData = filteredData.slice(start, end);
-
-    els.tableBody.innerHTML = pageData.map((row, index) => {
-        const formatMoney = (val) => {
-            if (typeof val === 'number') return '$ ' + val.toLocaleString('es-CL');
-            return val;
-        };
-
-        const fechaSalida = (row[COL.MES_SALIDA] && row[COL.ANIO_SALIDA])
-            ? `${String(row[COL.MES_SALIDA]).substring(0, 3)}-${row[COL.ANIO_SALIDA]}`
-            : '-';
-
-        let badgeClass = 'badge';
-        const tc = String(row[COL.TC_SALIDA] || '').toLowerCase();
-        if (tc.includes('contrata')) badgeClass += ' badge-contrata';
-        else if (tc.includes('honorarios')) badgeClass += ' badge-honorarios';
-        else if (tc.includes('planta')) badgeClass += ' badge-planta';
-        else if (tc.includes('trabajo')) badgeClass += ' badge-cod-trabajo';
-
-        let badgeClassEntrada = 'badge';
-        const tcEntrada = String(row[COL.TIPO_CONTRATO] || '').toLowerCase();
-
-        if (tcEntrada.includes('contrata')) badgeClassEntrada += ' badge-contrata';
-        else if (tcEntrada.includes('honorarios')) badgeClassEntrada += ' badge-honorarios';
-        else if (tcEntrada.includes('planta')) badgeClassEntrada += ' badge-planta';
-        else if (tcEntrada.includes('trabajo')) badgeClassEntrada += ' badge-cod-trabajo';
-
-        let calificacion = row[COL.CALIFICACION];
-        if (calificacion === 0 || calificacion === "0") {
-            calificacion = "Sin Clasificar";
+    // Small delay to simulate load and show shimmer
+    setTimeout(() => {
+        if (totalRecords === 0) {
+            els.tableBody.innerHTML = `
+                <tr>
+                    <td colspan="13" style="text-align: center; padding: 3rem;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-secondary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5;">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <span style="font-size: 1rem; font-weight: 500;">No se encontraron coincidencias</span>
+                            <span style="font-size: 0.85rem;">Intenta ajustar los filtros o tu búsqueda.</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            els.pageInfo.textContent = `Página 0 de 0`;
+            els.prevBtn.disabled = true;
+            els.nextBtn.disabled = true;
+            if (els.paginationNumbers) els.paginationNumbers.innerHTML = '';
+            return;
         }
 
+        const start = (currentPage - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pageData = filteredData.slice(start, end);
 
+        els.tableBody.innerHTML = pageData.map((row, index) => {
+            const g = (i) => {
+                let v = row[i];
+                return (v === null || v === undefined) ? "" : v;
+            };
 
-        // Use index to identify row later if needed, but easier to pass full object on click
-        // To attach click listener to dynamic row, we can use event delegation on tbody or attach here.
-        // Attaching simple inline onclick is messy with objects. 
-        // Best approach: Add data-index to TR.
-        // We need the index relative to filteredData? Yes.
-        const rowIndex = start + index;
+            const formatMoney = (val) => {
+                if (typeof val === 'number') return '$ ' + val.toLocaleString('es-CL');
+                return val || "";
+            };
 
-        return `
-            <tr onclick="showDetails(${rowIndex})">
-                <td>${row[COL.RUT] || ''}</td>
-                <td title="${row[COL.NOMBRE]}">${row[COL.NOMBRE] || ''}</td>
-                <td>${row[COL.ORG_PADRE] || ''}</td>
-                <td>${row[COL.ORGANISMO] || ''}</td>
-                <td>${calificacion || ''}</td>
-                <td>${row[COL.EDAD] || ''}</td>
-                <td>${row[COL.ANIO] || ''}</td>
-                <td>${row[COL.MES] || ''}</td>
-                <td><span class="${badgeClassEntrada}">${row[COL.TIPO_CONTRATO] || ''}</span></td>
-                <td>${fechaSalida}</td>
-                <td>${row[COL.PAGOS] || '0'}</td>
-                <td><span class="${badgeClass}">${row[COL.TC_SALIDA] || ''}</span></td>
-                <td style="text-align:right">${formatMoney(row[COL.REM_BRUTA])}</td>
-            </tr>
-        `;
-    }).join('');
+            const fechaSalida = (g(COL.MES_SALIDA) && g(COL.ANIO_SALIDA))
+                ? `${String(g(COL.MES_SALIDA)).substring(0, 3)}-${g(COL.ANIO_SALIDA)}`
+                : '-';
 
-    const totalPages = Math.ceil(totalRecords / PAGE_SIZE);
-    els.pageInfo.textContent = `Página ${currentPage} de ${totalPages || 1}`;
-    els.prevBtn.disabled = currentPage <= 1;
-    els.nextBtn.disabled = currentPage >= totalPages;
+            let badgeClass = 'badge';
+            const tc = String(g(COL.TC_SALIDA)).toLowerCase();
+            if (tc.includes('contrata')) badgeClass += ' badge-contrata';
+            else if (tc.includes('honorarios')) badgeClass += ' badge-honorarios';
+            else if (tc.includes('planta')) badgeClass += ' badge-planta';
+            else if (tc.includes('trabajo')) badgeClass += ' badge-cod-trabajo';
+
+            let badgeClassEntrada = 'badge';
+            const tcEntrada = String(g(COL.TIPO_CONTRATO)).toLowerCase();
+
+            if (tcEntrada.includes('contrata')) badgeClassEntrada += ' badge-contrata';
+            else if (tcEntrada.includes('honorarios')) badgeClassEntrada += ' badge-honorarios';
+            else if (tcEntrada.includes('planta')) badgeClassEntrada += ' badge-planta';
+            else if (tcEntrada.includes('trabajo')) badgeClassEntrada += ' badge-cod-trabajo';
+
+            let calificacion = g(COL.CALIFICACION);
+            if (calificacion === 0 || calificacion === "0") {
+                calificacion = "Sin Clasificar";
+            }
+
+            const rowIndex = start + index;
+
+            return `
+                <tr onclick="showDetails(${rowIndex})">
+                    <td>${g(COL.RUT)}</td>
+                    <td title="${g(COL.NOMBRE)}">${g(COL.NOMBRE)}</td>
+                    <td>${g(COL.ORG_PADRE)}</td>
+                    <td>${g(COL.ORGANISMO)}</td>
+                    <td>${calificacion}</td>
+                    <td>${g(COL.EDAD)}</td>
+                    <td>${g(COL.ANIO)}</td>
+                    <td>${g(COL.MES)}</td>
+                    <td><span class="${badgeClassEntrada}">${g(COL.TIPO_CONTRATO)}</span></td>
+                    <td>${fechaSalida}</td>
+                    <td>${g(COL.PAGOS) || '0'}</td>
+                    <td><span class="${badgeClass}">${g(COL.TC_SALIDA)}</span></td>
+                    <td style="text-align:right">${formatMoney(g(COL.REM_BRUTA))}</td>
+                </tr>
+            `;
+        }).join('');
+
+        const totalPages = Math.ceil(totalRecords / PAGE_SIZE);
+        els.pageInfo.textContent = `Página ${currentPage} de ${totalPages || 1}`;
+        els.prevBtn.disabled = currentPage <= 1;
+        els.nextBtn.disabled = currentPage >= totalPages;
+
+        renderPaginationNumbers(totalPages);
+    }, 300);
+}
+
+function renderPaginationNumbers(totalPages) {
+    if (!els.paginationNumbers) return;
+    els.paginationNumbers.innerHTML = '';
+
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - 2);
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start < maxVisible - 1) {
+        start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+        const span = document.createElement('div');
+        span.className = `page-num ${i === currentPage ? 'active' : ''}`;
+        span.textContent = i;
+        span.onclick = () => {
+            currentPage = i;
+            updateTable();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        els.paginationNumbers.appendChild(span);
+    }
 }
 
 els.prevBtn.addEventListener('click', () => {

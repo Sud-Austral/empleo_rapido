@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empleo Rápido - Dashboard Municipal</title>
+    <meta name="description" content="Dashboard de datos de empleo municipal con filtros avanzados.">
+    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Instituto Libertad" class="header-logo">
+                <span id="logo-text">Empleo Rápido Municipal</span>
+            </div>
+            <div class="header-controls">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Buscar por Nombre o RUT...">
+                </div>
+                <div class="search-box">
+                    <input type="text" id="search-cargo" placeholder="Buscar por Cargo...">
+                </div>
+                <button id="btn-download" class="header-btn" title="Descargar Excel">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+                <a href="../ayuda.html" class="help-link" title="Ayuda y Metodología">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                </a>
+
+                <a href="../estadistica.html" class="header-btn" title="Ir al Dashboard Estadístico"
+                    style="display:flex; gap:0.5rem; text-decoration:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span style="font-weight:600; font-size:0.8rem;">Estadísticas</span>
+                </a>
+
+                <a href="../index.html" class="header-btn" title="Volver al Dashboard Central"
+                    style="display:flex; gap:0.5rem; text-decoration:none; background-color: #f0fdf4; border-color: #bbf7d0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="#166534" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span style="font-weight:600; font-size:0.8rem; color: #166534;">Central</span>
+                </a>
+
+                <span id="record-count">Cargando datos...</span>
+            </div>
+        </header>
+
+        <div class="breadcrumb-nav">
+            <a href="../index.html">Dashboard Central</a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <a href="../index.html">Empleo Rápido</a>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span class="current">Municipal</span>
+        </div>
+
+        <main class="main-content">
+            <!-- Mobile Filter Toggle -->
+            <button id="mobile-filter-btn" class="mobile-filter-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                <span>Filtros</span>
+            </button>
+
+            <aside class="filters-panel" id="filters-panel">
+                <div class="filters-header">
+                    <h3>Filtros</h3>
+                    <button id="btn-clear-filters" class="btn-clear-large">
+                        Limpiar filtros
+                    </button>
+                    <!-- Small close btn for mobile drawer -->
+                    <button id="close-filters-mobile" class="close-filters-mobile">&times;</button>
+                </div>
+                <div class="filter-group">
+                    <label>Org Padre <span class="filter-count-badge" id="count-org-padre">0</span></label>
+                    <div class="filter-options" id="filter-org-padre"></div>
+                </div>
+                <div class="filter-group">
+                    <label>Organismo <span class="filter-count-badge" id="count-organismo">0</span></label>
+                    <div class="filter-search-box">
+                        <input type="text" id="search-filter-organismo" placeholder="Filtrar organismos...">
+                    </div>
+                    <div class="filter-options" id="filter-organismo"></div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group half">
+                        <label>Año Entrada</label>
+                        <div class="filter-options compact" id="filter-anio"></div>
+                    </div>
+                    <div class="filter-group half">
+                        <label>Mes Entrada</label>
+                        <div class="filter-options compact" id="filter-mes"></div>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group half">
+                        <label>Año Salida</label>
+                        <div class="filter-options compact" id="filter-anio-salida"></div>
+                    </div>
+                    <div class="filter-group half">
+                        <label>Mes Salida</label>
+                        <div class="filter-options compact" id="filter-mes-salida"></div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo Contrato Entrada</label>
+                    <div class="filter-options" id="filter-tipo-contrato"></div>
+                </div>
+                <div class="filter-group">
+                    <label>Tipo Contrato Salida</label>
+                    <div class="filter-options" id="filter-tc-salida"></div>
+                </div>
+                <div class="filter-group">
+                    <label>Calificación Entrada <span class="filter-count-badge"
+                            id="count-calificacion">0</span></label>
+                    <div class="filter-search-box">
+                        <input type="text" id="search-filter-calificacion" placeholder="Filtrar calificaciones...">
+                    </div>
+                    <div class="filter-options" id="filter-calificacion"></div>
+                </div>
+            </aside>
+
+            <div class="sidebar-toggle" id="sidebar-toggle" title="Contraer/Expandir Filtros">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </div>
+
+            <section class="results-section">
+                <div class="stats-container" id="stats-container">
+                    <!-- Stats injected by JS -->
+                </div>
+
+                <div id="active-filters-bar" class="active-filters-bar hidden">
+                    <span class="active-filters-label">Filtros activos:</span>
+                    <div id="active-filters-list" class="active-filters-list"></div>
+                </div>
+
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th data-col="RUT" title="Número de identificación tributaria">RUT</th>
+                                <th data-col="NOMBRE" title="Nombre completo del registro">Nombre</th>
+                                <th data-col="ORG_PADRE" title="Organismo superior jerárquico">Org Padre</th>
+                                <th data-col="ORGANISMO" title="Institución específica del cargo">Organismo</th>
+                                <th data-col="CALIFICACION" title="Grado o nivel de calif. profesional">Calificación
+                                </th>
+                                <th data-col="EDAD" title="Edad aproximada">Edad</th>
+                                <th data-col="ANIO" title="Año de entrada o referencia">Año</th>
+                                <th data-col="MES" title="Mes de entrada o referencia">Mes</th>
+                                <th data-col="TIPO_CONTRATO" title="Forma jurídica de contratación inicial">Tipo
+                                    Contrato</th>
+                                <th data-col="FECHA_SALIDA" title="Fecha de término del cargo">Fecha Salida</th>
+                                <th data-col="PAGOS" title="Cantidad de registros de remuneración">Pagos</th>
+                                <th data-col="TC_SALIDA" title="Forma jurídica de contratación al salir">TC Salida</th>
+                                <th data-col="REM_BRUTA" title="Promedio de remuneración bruta mensual"
+                                    style="text-align:right">Rem Bruta Media</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prev-page" class="btn-icon" disabled title="Anterior">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <div class="pagination-numbers" id="pagination-numbers">
+                        <!-- Page numbers injected by JS -->
+                    </div>
+                    <button id="next-page" class="btn-icon" title="Siguiente">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <span id="page-info" style="font-size: 0.75rem; color: var(--text-secondary);">Página 1</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Details Modal -->
+        <div id="details-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Detalles del Registro</h2>
+                    <button id="close-modal" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-details-body">
+                    <!-- Details injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="js/script.js?v=8"></script>
+</body>
+
+</html>
