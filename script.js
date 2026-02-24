@@ -183,10 +183,10 @@ const filterConfigs = [
 
 async function init() {
     try {
-        els.recordCount.textContent = 'Cargando datos municipales (esto puede tardar unos segundos)...';
-        const response = await fetch('../data2_muni.json.gz');
+        els.recordCount.textContent = 'Cargando datos (esto puede tardar unos segundos)...';
+        const response = await fetch('data2.json.gz');
 
-        if (!response.ok) throw new Error('No se pudo cargar data2_muni.json.gz');
+        if (!response.ok) throw new Error('No se pudo cargar data2.json.gz');
 
         // Decompress the GZIP file client-side
         const ds = new DecompressionStream('gzip');
@@ -293,7 +293,7 @@ async function init() {
     } catch (e) {
         console.error(e);
         els.recordCount.textContent = 'Error cargando datos.';
-        alert('Error cargando data2_muni.json.gz. Asegúrate de que el navegador soporte DecompressionStream.');
+        alert('Error cargando data2.json.gz. Asegúrate de que el navegador soporte DecompressionStream.');
     }
 }
 
